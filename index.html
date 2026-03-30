@@ -21,159 +21,144 @@
       --neutral: #666;
       --text: #EBEBEB;
       --dim: #333;
+      --accent: #3B82F6;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
     html, body {
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg); color: var(--text);
       font-family: 'Barlow Condensed', sans-serif;
-      height: 100%;
-      overflow: hidden;
-      user-select: none;
-      -webkit-user-select: none;
+      height: 100%; overflow: hidden;
+      user-select: none; -webkit-user-select: none;
     }
 
     .screen {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
-      padding: max(env(safe-area-inset-top), 20px) 20px max(env(safe-area-inset-bottom), 20px);
+      padding: max(env(safe-area-inset-top), 20px) 16px max(env(safe-area-inset-bottom), 20px);
       opacity: 0; pointer-events: none;
       transition: opacity 0.18s ease;
+      overflow-y: auto; overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
     .screen.active { opacity: 1; pointer-events: all; }
 
     /* ── MODE SELECT ── */
-    #screen-mode { justify-content: center; }
-
-    .mode-header { text-align: center; margin-bottom: 28px; }
+    #screen-mode { justify-content: center; gap: 10px; }
+    .mode-header { text-align: center; margin-bottom: 20px; }
     .mode-header h1 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 52px; letter-spacing: 8px;
+      font-size: 48px; letter-spacing: 8px;
       color: var(--go); line-height: 1;
     }
     .mode-header p {
       font-size: 13px; color: var(--neutral);
       letter-spacing: 3px; text-transform: uppercase; margin-top: 6px;
     }
+
+    .mode-btn {
+      background: var(--surface);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 22px 20px;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.1s, transform 0.1s;
+      position: relative; overflow: hidden;
+    }
+    .mode-btn:active { transform: scale(0.97); border-color: var(--go); }
+    .mode-btn .mode-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 3px; color: var(--text);
+    }
+
     .autolock-tip {
-      text-align: center; margin-top: 20px;
-      padding: 12px 16px;
+      text-align: center; margin-top: 14px;
+      padding: 10px 14px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 12px; color: var(--neutral);
+      font-size: 11px; color: var(--neutral);
       letter-spacing: 1px; line-height: 1.6;
     }
     .autolock-tip strong { color: var(--text); }
 
-    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    .mode-card {
-      background: var(--surface);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 22px 14px 20px;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 7px;
-      cursor: pointer;
-      transition: border-color 0.1s, transform 0.1s, background 0.1s;
-      position: relative; overflow: hidden;
-    }
-    .mode-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: var(--go); opacity: 0; transition: opacity 0.1s;
-    }
-    .mode-card:active { transform: scale(0.96); }
-    .mode-card:active::before { opacity: 0.06; }
-    .mode-card:active { border-color: var(--go); }
-
-    .mode-card .icon { font-size: 28px; line-height: 1; }
-    .mode-card .label {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 24px; letter-spacing: 2px; color: var(--go); line-height: 1;
-    }
-    .mode-card .desc {
-      font-size: 11px; color: var(--neutral);
-      text-align: center; letter-spacing: 1px;
-      text-transform: uppercase; line-height: 1.5;
-    }
-
     /* ── CONFIG ── */
-    #screen-config { justify-content: space-between; }
+    #screen-config { justify-content: flex-start; }
 
     .config-top-bar {
       display: flex; align-items: stretch; gap: 10px;
-      margin-bottom: 16px; padding-top: 4px;
+      margin-bottom: 16px; padding-top: 4px; flex-shrink: 0;
     }
     .back-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: 'Barlow Condensed', sans-serif;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-family: 'Barlow Condensed', sans-serif;
       font-size: 15px; letter-spacing: 2px;
-      padding: 14px 22px; border-radius: 10px;
+      padding: 14px 20px; border-radius: 10px;
       cursor: pointer; text-transform: uppercase;
-      transition: border-color 0.1s, color 0.1s, background 0.1s;
-      display: flex; align-items: center; gap: 8px;
-      flex-shrink: 0;
+      transition: border-color 0.1s, background 0.1s;
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
     }
-    .back-btn .back-arrow {
-      font-size: 24px; line-height: 1; color: var(--go);
-    }
+    .back-btn .back-arrow { font-size: 24px; line-height: 1; color: var(--go); }
     .back-btn:active { border-color: var(--go); background: rgba(200,255,0,0.06); }
 
     .config-title-box {
       flex: 1; display: flex; align-items: center; justify-content: center;
-      background: var(--surface);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
     }
     .config-title {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px; letter-spacing: 4px; color: var(--go);
+      font-size: 22px; letter-spacing: 3px; color: var(--go);
     }
 
-    .config-fields {
-      flex: 1; display: flex;
-      flex-direction: column; gap: 14px;
-      justify-content: center;
+    /* ── SUBMODE TABS ── */
+    .submode-tabs {
+      display: flex; gap: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+      margin-bottom: 16px; flex-shrink: 0;
     }
+    .submode-tab {
+      flex: 1; padding: 12px 6px; text-align: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 17px; letter-spacing: 2px;
+      color: var(--neutral); cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+      border: none; background: none;
+    }
+    .submode-tab + .submode-tab { border-left: 1px solid var(--border); }
+    .submode-tab.active { color: var(--bg); background: var(--go); }
 
+    .config-body {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; gap: 14px;
+    }
     .field-group { display: flex; flex-direction: column; gap: 6px; }
     .field-label {
       font-size: 11px; letter-spacing: 3px;
       text-transform: uppercase; color: var(--neutral);
     }
 
-    /* ── SIMPLE NUMBER INPUT ── */
+    /* ── NUMBER INPUT ── */
     .number-input {
       display: flex; align-items: center;
-      background: var(--surface);
-      border: 1px solid var(--border); border-radius: 8px;
-      overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
     }
     .num-btn {
-      background: none; border: none;
-      color: var(--go); font-size: 30px;
-      width: 60px; height: 60px;
-      cursor: pointer; display: flex;
-      align-items: center; justify-content: center;
+      background: none; border: none; color: var(--go); font-size: 30px;
+      width: 60px; height: 60px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; font-family: 'Bebas Neue', sans-serif;
-      transition: background 0.1s;
     }
     .num-btn:active { background: rgba(200,255,0,0.08); }
     .num-display {
-      flex: 1; text-align: center;
-      font-family: 'Bebas Neue', sans-serif;
+      flex: 1; text-align: center; font-family: 'Bebas Neue', sans-serif;
       font-size: 40px; color: var(--text); letter-spacing: 2px;
     }
 
     /* ── SCROLL PICKER ── */
     .picker-row {
-      display: flex; gap: 0; align-items: stretch;
-      background: var(--surface);
-      border: 1px solid var(--border); border-radius: 10px;
-      overflow: hidden; height: 180px;
+      display: flex; align-items: stretch;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; height: 180px;
       position: relative;
     }
     .picker-col { flex: 1; position: relative; overflow: hidden; }
@@ -191,25 +176,18 @@
       scrollbar-width: none;
     }
     .picker-scroller::-webkit-scrollbar { display: none; }
-
     .picker-item {
-      height: 60px;
-      display: flex; align-items: center; justify-content: center;
+      height: 60px; display: flex; align-items: center; justify-content: center;
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px; letter-spacing: 2px;
-      color: var(--dim);
-      scroll-snap-align: center;
-      transition: color 0.15s, transform 0.15s;
-      cursor: pointer;
+      font-size: 34px; letter-spacing: 2px; color: var(--dim);
+      scroll-snap-align: center; transition: color 0.15s, transform 0.15s;
     }
-    .picker-item.selected { color: var(--text); transform: scale(1.1); }
-
+    .picker-item.selected { color: var(--text); transform: scale(1.08); }
     .picker-row::before {
       content: ''; position: absolute;
       top: 50%; left: 0; right: 0; height: 60px;
       transform: translateY(-50%);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
       background: rgba(200,255,0,0.03);
       pointer-events: none; z-index: 3;
     }
@@ -219,22 +197,31 @@
     }
     .picker-col::before { top: 0; background: linear-gradient(to bottom, var(--surface) 20%, transparent); }
     .picker-col::after { bottom: 0; background: linear-gradient(to top, var(--surface) 20%, transparent); }
-
     .picker-separator {
       display: flex; align-items: center; justify-content: center;
-      width: 30px; flex-shrink: 0;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px; color: var(--neutral);
+      width: 24px; flex-shrink: 0; font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; color: var(--neutral);
     }
+
+    /* ── 3-COLUMN PICKER ROW ── */
+    .triple-picker {
+      display: flex; gap: 8px; align-items: stretch;
+    }
+    .triple-picker .picker-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .triple-picker .picker-group-label {
+      text-align: center; font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--neutral);
+    }
+    .triple-picker .picker-row { height: 170px; }
 
     .start-btn {
       background: var(--go); color: #090909;
       border: none; border-radius: 10px;
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px; letter-spacing: 5px;
-      padding: 20px; cursor: pointer; width: 100%;
+      font-size: 28px; letter-spacing: 5px;
+      padding: 18px; cursor: pointer; width: 100%;
       transition: transform 0.1s, opacity 0.1s;
-      margin-top: 16px;
+      margin-top: 14px; flex-shrink: 0;
     }
     .start-btn:active { transform: scale(0.98); opacity: 0.88; }
 
@@ -243,8 +230,7 @@
     .cd-number {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(140px, 42vw, 260px);
-      line-height: 1; color: var(--go);
-      opacity: 0; transform: scale(1.6);
+      line-height: 1; color: var(--go); opacity: 0; transform: scale(1.6);
     }
     .cd-number.pop { animation: cdPop 0.75s ease-out forwards; }
     @keyframes cdPop {
@@ -260,15 +246,9 @@
 
     /* ── TIMER ── */
     #screen-timer { justify-content: space-between; align-items: stretch; }
-
-    .timer-top {
-      display: flex; justify-content: space-between;
-      align-items: center; padding-top: 4px;
-    }
-
+    .timer-top { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; }
     .phase-badge {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 18px; letter-spacing: 4px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 4px;
       padding: 6px 16px; border-radius: 5px;
       background: var(--go); color: #090909;
       transition: background 0.25s, color 0.25s;
@@ -277,9 +257,8 @@
     .phase-badge.done { background: var(--dim); color: var(--neutral); }
 
     .round-display {
-      font-size: 13px; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--neutral);
-      text-align: right; line-height: 1.3;
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--neutral); text-align: right; line-height: 1.3;
     }
     .round-display strong {
       display: block; font-family: 'Bebas Neue', sans-serif;
@@ -290,7 +269,6 @@
       flex: 1; display: flex; flex-direction: column;
       justify-content: center; align-items: center; gap: 16px;
     }
-
     .big-time {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(96px, 28vw, 150px);
@@ -301,10 +279,7 @@
     .big-time.rest { color: var(--rest); }
     .big-time.done { color: var(--dim); }
 
-    .progress-track {
-      width: 100%; height: 5px;
-      background: var(--border); border-radius: 3px; overflow: hidden;
-    }
+    .progress-track { width: 100%; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
     .progress-fill {
       height: 100%; border-radius: 3px; background: var(--go);
       transition: width 0.08s linear, background 0.25s;
@@ -312,39 +287,26 @@
     .progress-fill.rest { background: var(--rest); }
 
     .next-up {
-      font-size: 13px; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--neutral); min-height: 20px;
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--neutral); min-height: 20px;
     }
     .next-up span { color: var(--text); }
     .next-up.done-msg { color: var(--go); font-size: 15px; }
 
     .timer-controls { display: flex; gap: 10px; width: 100%; }
-
     .ctrl-btn {
       flex: 1; padding: 18px; border-radius: 10px;
       border: 1px solid var(--border); background: var(--surface);
       color: var(--neutral); font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px; letter-spacing: 3px;
-      cursor: pointer; transition: all 0.1s;
+      font-size: 20px; letter-spacing: 3px; cursor: pointer;
     }
     .ctrl-btn:active { transform: scale(0.97); }
-
-    .ctrl-btn.primary {
-      background: var(--go); color: #090909;
-      border-color: var(--go); flex: 2;
-    }
-    .ctrl-btn.primary.paused {
-      background: var(--surface); color: var(--go); border-color: var(--go);
-    }
-    .ctrl-btn.primary.done-state {
-      background: var(--surface); color: var(--dim); border-color: var(--dim);
-    }
+    .ctrl-btn.primary { background: var(--go); color: #090909; border-color: var(--go); flex: 2; }
+    .ctrl-btn.primary.paused { background: var(--surface); color: var(--go); border-color: var(--go); }
+    .ctrl-btn.primary.done-state { background: var(--surface); color: var(--dim); border-color: var(--dim); }
 
     /* ── FLASH ── */
-    #flash {
-      position: fixed; inset: 0;
-      pointer-events: none; opacity: 0; z-index: 200;
-    }
+    #flash { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 200; }
     #flash.flash-in { animation: flashAnim 0.35s ease-out forwards; }
     @keyframes flashAnim { 0% { opacity: 0.55; } 100% { opacity: 0; } }
 
@@ -352,13 +314,11 @@
     body::after {
       content: ''; position: fixed; inset: 0;
       background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Gy7tu/yYvivMV0NvsW7f12teleqGR16teleqGR16deje2b/X+b7e+cP7B/YP7h/aH9w/un95/5n/mf+V/43teleqGR16Vy6vWV+svl9OX0Ffrl8uXyFfIV8lX6v0teleqDvOH5Bfml82X1ZfHV8nXwtfJ18X/w0/Dz8PP5z/FP8U/xT/FH/5EH/YJHAIPDQ8Mjw+PCM8ITwpPAEAAA=");
-      background-repeat: repeat;
-      pointer-events: none; z-index: 1; opacity: 0.08; will-change: auto;
+      background-repeat: repeat; pointer-events: none; z-index: 1; opacity: 0.08;
     }
   </style>
 </head>
 <body>
-
 <div id="flash"></div>
 
 <!-- ── MODE SELECT ── -->
@@ -367,27 +327,14 @@
     <h1>GYM TIMER</h1>
     <p>Select a mode</p>
   </div>
-  <div class="mode-grid">
-    <div class="mode-card" onclick="selectMode('amrap')">
-      <div class="icon">⏱</div>
-      <div class="label">AMRAP</div>
-      <div class="desc">Count up.<br>Max reps in time.</div>
-    </div>
-    <div class="mode-card" onclick="selectMode('countdown')">
-      <div class="icon">⬇️</div>
-      <div class="label">Countdown</div>
-      <div class="desc">Set duration,<br>count down to zero.</div>
-    </div>
-    <div class="mode-card" onclick="selectMode('hiit')">
-      <div class="icon">🔥</div>
-      <div class="label">HIIT</div>
-      <div class="desc">Custom work / rest<br>interval rounds.</div>
-    </div>
-    <div class="mode-card" onclick="selectMode('tabata')">
-      <div class="icon">⚡</div>
-      <div class="label">Tabata</div>
-      <div class="desc">20s on / 10s off,<br>classic 8 rounds.</div>
-    </div>
+  <div class="mode-btn" onclick="selectMode('interval')">
+    <div class="mode-label">INTERVAL  |  EMOM  |  TABATA</div>
+  </div>
+  <div class="mode-btn" onclick="selectMode('countdown')">
+    <div class="mode-label">COUNTDOWN  |  AMRAP</div>
+  </div>
+  <div class="mode-btn" onclick="selectMode('stopwatch')">
+    <div class="mode-label">FOR TIME  |  STOPWATCH</div>
   </div>
   <div class="autolock-tip">
     📱 <strong>Tip:</strong> Set Auto-Lock to <strong>Never</strong> during workouts.<br>
@@ -405,13 +352,14 @@
       <div class="config-title" id="config-title">CONFIG</div>
     </div>
   </div>
-  <div class="config-fields" id="config-fields"></div>
+  <div id="submode-container"></div>
+  <div class="config-body" id="config-body"></div>
   <button class="start-btn" onclick="beginCountdown()">START</button>
 </div>
 
 <!-- ── PRE-START COUNTDOWN ── -->
 <div class="screen" id="screen-countdown">
-  <div class="cd-number" id="cd-number">3</div>
+  <div class="cd-number" id="cd-number">10</div>
   <div class="cd-label">GET READY</div>
 </div>
 
@@ -423,9 +371,7 @@
   </div>
   <div class="timer-main">
     <div class="big-time go" id="big-time" aria-live="polite" aria-atomic="true">00:00</div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     <div class="next-up" id="next-up" aria-live="polite"></div>
   </div>
   <div class="timer-controls">
@@ -436,7 +382,8 @@
 
 <script>
 // ─────────────────────────── STATE ───────────────────────────────
-let mode = null;
+let mode = null;     // 'interval' | 'countdown' | 'stopwatch'
+let submode = null;  // 'interval'|'emom'|'tabata' or 'countdown'|'amrap' or 'fortime'|'stopwatch'
 let cfg = {};
 const ts = {
   status: 'idle', phaseIdx: 0, phases: [], round: 1,
@@ -462,194 +409,280 @@ function showScreen(name) {
 // ──────────────────────────── MODE ───────────────────────────────
 function selectMode(m) {
   mode = m;
-  buildConfigScreen(m);
+  if (m === 'interval') { submode = 'interval'; buildIntervalConfig(); }
+  else if (m === 'countdown') { submode = 'countdown'; buildCountdownConfig(); }
+  else if (m === 'stopwatch') { submode = 'fortime'; buildStopwatchConfig(); }
   showScreen('config');
 }
 
-const MODES = { amrap: 'AMRAP', countdown: 'COUNTDOWN', hiit: 'HIIT', tabata: 'TABATA' };
+// ────────────────────── SUBMODE TABS ─────────────────────────────
+function buildTabs(tabs, activeTab) {
+  const container = document.getElementById('submode-container');
+  container.innerHTML = `<div class="submode-tabs">
+    ${tabs.map(t => `<button class="submode-tab${t.id === activeTab ? ' active' : ''}"
+      onclick="switchSubmode('${t.id}')">${t.label}</button>`).join('')}
+  </div>`;
+}
 
-// ────────────────────── PICKER BUILDER ───────────────────────────
-function timePicker(id, label, defaultMin, defaultSec, maxMin) {
-  const mm = maxMin || 99;
-  return `
+function switchSubmode(sm) {
+  submode = sm;
+  if (mode === 'interval') buildIntervalConfig();
+  else if (mode === 'countdown') buildCountdownConfig();
+  else if (mode === 'stopwatch') buildStopwatchConfig();
+}
+
+// ─────────────────── INTERVAL / EMOM / TABATA ────────────────────
+function buildIntervalConfig() {
+  document.getElementById('config-title').textContent = 'INTERVAL | EMOM | TABATA';
+  buildTabs([
+    { id: 'interval', label: 'INTERVAL' },
+    { id: 'emom', label: 'EMOM' },
+    { id: 'tabata', label: 'TABATA' },
+  ], submode);
+
+  const body = document.getElementById('config-body');
+  let defWork, defRest, defRounds;
+  if (submode === 'tabata')  { defWork = [0,20]; defRest = [0,10]; defRounds = 8; }
+  else if (submode === 'emom') { defWork = [1,0]; defRest = [0,0]; defRounds = 10; }
+  else { defWork = [0,40]; defRest = [0,20]; defRounds = 10; }
+
+  body.innerHTML = `
+    <div class="triple-picker">
+      <div class="picker-group">
+        <div class="picker-group-label">Work</div>
+        <div class="picker-row" id="picker-work">
+          <div class="picker-col">
+            <div class="picker-scroller" id="ps-work-min">
+              ${minItems(10)}
+            </div>
+          </div>
+          <div class="picker-separator">:</div>
+          <div class="picker-col">
+            <div class="picker-scroller" id="ps-work-sec">
+              ${secItems()}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="picker-group">
+        <div class="picker-group-label">Rest</div>
+        <div class="picker-row" id="picker-rest">
+          <div class="picker-col">
+            <div class="picker-scroller" id="ps-rest-min">
+              ${minItems(10)}
+            </div>
+          </div>
+          <div class="picker-separator">:</div>
+          <div class="picker-col">
+            <div class="picker-scroller" id="ps-rest-sec">
+              ${secItems()}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="picker-group">
+        <div class="picker-group-label">Rounds</div>
+        <div class="picker-row" id="picker-rounds">
+          <div class="picker-col">
+            <div class="picker-scroller" id="ps-rounds">
+              ${Array.from({length:50}, (_,i) => `<div class="picker-item" data-val="${i+1}">${String(i+1).padStart(2,'0')}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  requestAnimationFrame(() => {
+    initScroller('ps-work-min', defWork[0]);
+    initScroller('ps-work-sec', defWork[1]);
+    initScroller('ps-rest-min', defRest[0]);
+    initScroller('ps-rest-sec', defRest[1]);
+    initScroller('ps-rounds', defRounds);
+  });
+}
+
+// ─────────────────── COUNTDOWN / AMRAP ───────────────────────────
+function buildCountdownConfig() {
+  document.getElementById('config-title').textContent = 'COUNTDOWN | AMRAP';
+  buildTabs([
+    { id: 'countdown', label: 'COUNTDOWN' },
+    { id: 'amrap', label: 'AMRAP' },
+  ], submode);
+
+  const body = document.getElementById('config-body');
+  body.innerHTML = `
     <div class="field-group">
-      <div class="field-label">${label}</div>
-      <div class="picker-row" id="picker-${id}">
+      <div class="field-label">Duration</div>
+      <div class="picker-row" id="picker-duration">
         <div class="picker-col">
           <div class="picker-col-label">MIN</div>
-          <div class="picker-scroller" id="ps-${id}-min">
-            ${Array.from({length: mm + 1}, (_, i) =>
-              `<div class="picker-item" data-val="${i}">${String(i).padStart(2,'0')}</div>`
-            ).join('')}
+          <div class="picker-scroller" id="ps-dur-min">
+            ${minItems(99)}
           </div>
         </div>
         <div class="picker-separator">:</div>
         <div class="picker-col">
           <div class="picker-col-label">SEC</div>
-          <div class="picker-scroller" id="ps-${id}-sec">
-            ${Array.from({length: 12}, (_, i) =>
-              `<div class="picker-item" data-val="${i*5}">${String(i*5).padStart(2,'0')}</div>`
-            ).join('')}
+          <div class="picker-scroller" id="ps-dur-sec">
+            ${secItems()}
           </div>
         </div>
       </div>
     </div>`;
+
+  requestAnimationFrame(() => {
+    initScroller('ps-dur-min', 10);
+    initScroller('ps-dur-sec', 0);
+  });
 }
 
-function numRow(id, label, def, min, max, step) {
-  return `
-    <div class="field-group">
-      <div class="field-label">${label}</div>
-      <div class="number-input">
-        <button class="num-btn" onclick="adj('${id}',-${step},${min},${max})">−</button>
-        <div class="num-display" id="nv-${id}">${def}</div>
-        <button class="num-btn" onclick="adj('${id}',${step},${min},${max})">+</button>
-      </div>
-    </div>`;
+// ─────────────────── FOR TIME / STOPWATCH ────────────────────────
+function buildStopwatchConfig() {
+  document.getElementById('config-title').textContent = 'FOR TIME | STOPWATCH';
+  buildTabs([
+    { id: 'fortime', label: 'FOR TIME' },
+    { id: 'stopwatch', label: 'STOPWATCH' },
+  ], submode);
+
+  const body = document.getElementById('config-body');
+  if (submode === 'fortime') {
+    body.innerHTML = `
+      <div class="field-group">
+        <div class="field-label">Time Cap (optional)</div>
+        <div class="picker-row" id="picker-cap">
+          <div class="picker-col">
+            <div class="picker-col-label">MIN</div>
+            <div class="picker-scroller" id="ps-cap-min">
+              <div class="picker-item" data-val="0">--</div>
+              ${Array.from({length:99}, (_,i) => `<div class="picker-item" data-val="${i+1}">${String(i+1).padStart(2,'0')}</div>`).join('')}
+            </div>
+          </div>
+          <div class="picker-separator">:</div>
+          <div class="picker-col">
+            <div class="picker-col-label">SEC</div>
+            <div class="picker-scroller" id="ps-cap-sec">
+              ${secItems()}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    requestAnimationFrame(() => {
+      initScroller('ps-cap-min', 0);
+      initScroller('ps-cap-sec', 0);
+    });
+  } else {
+    body.innerHTML = `
+      <div style="text-align:center; color:var(--neutral); font-size:14px; letter-spacing:2px; padding: 40px 0;">
+        Simple count-up timer.<br>Tap START when ready.
+      </div>`;
+  }
 }
 
-function adj(id, delta, min, max) {
-  const el = document.getElementById('nv-' + id);
-  el.textContent = Math.max(min, Math.min(max, +el.textContent + delta));
+// ─────────────────── PICKER HELPERS ──────────────────────────────
+function minItems(max) {
+  return Array.from({length: max+1}, (_,i) =>
+    `<div class="picker-item" data-val="${i}">${String(i).padStart(2,'0')}</div>`
+  ).join('');
+}
+function secItems() {
+  return Array.from({length:12}, (_,i) =>
+    `<div class="picker-item" data-val="${i*5}">${String(i*5).padStart(2,'0')}</div>`
+  ).join('');
 }
 
-// ─────────────────── PICKER SCROLL LOGIC ─────────────────────────
-function initScroller(scrollerId, defaultVal) {
-  const scroller = document.getElementById(scrollerId);
+function initScroller(id, defaultVal) {
+  const scroller = document.getElementById(id);
   if (!scroller) return;
   const itemH = 60;
+  const pad = () => { const d = document.createElement('div'); d.style.height = itemH+'px'; d.style.flexShrink='0'; return d; };
+  scroller.prepend(pad()); scroller.append(pad());
 
-  // Padding so first/last can center
-  const pad = () => { const d = document.createElement('div'); d.style.height = itemH + 'px'; d.style.flexShrink = '0'; return d; };
-  scroller.prepend(pad());
-  scroller.append(pad());
-
-  // Scroll to default
   let target = null;
   scroller.querySelectorAll('.picker-item').forEach(it => {
     if (parseInt(it.dataset.val) === defaultVal) target = it;
   });
-
   requestAnimationFrame(() => {
-    if (target) {
-      scroller.scrollTop = target.offsetTop - scroller.offsetHeight / 2 + itemH / 2;
-    }
-    updatePickerHighlight(scroller);
+    if (target) scroller.scrollTop = target.offsetTop - scroller.offsetHeight/2 + itemH/2;
+    updateHL(scroller);
   });
-
-  // Snap on scroll end
   let t = null;
   scroller.addEventListener('scroll', () => {
     clearTimeout(t);
-    t = setTimeout(() => snapToNearest(scroller), 80);
-    updatePickerHighlight(scroller);
+    t = setTimeout(() => snapTo(scroller), 80);
+    updateHL(scroller);
   }, { passive: true });
 }
 
-function snapToNearest(scroller) {
-  const itemH = 60;
-  const centerY = scroller.scrollTop + scroller.offsetHeight / 2;
+function snapTo(scroller) {
+  const itemH = 60, centerY = scroller.scrollTop + scroller.offsetHeight/2;
   let closest = null, dist = Infinity;
   scroller.querySelectorAll('.picker-item').forEach(item => {
-    const d = Math.abs(centerY - (item.offsetTop + itemH / 2));
+    const d = Math.abs(centerY - (item.offsetTop + itemH/2));
     if (d < dist) { dist = d; closest = item; }
   });
-  if (closest) {
-    scroller.scrollTo({
-      top: closest.offsetTop - scroller.offsetHeight / 2 + itemH / 2,
-      behavior: 'smooth'
-    });
-  }
-  updatePickerHighlight(scroller);
+  if (closest) scroller.scrollTo({ top: closest.offsetTop - scroller.offsetHeight/2 + itemH/2, behavior: 'smooth' });
+  updateHL(scroller);
 }
 
-function updatePickerHighlight(scroller) {
-  const itemH = 60;
-  const centerY = scroller.scrollTop + scroller.offsetHeight / 2;
+function updateHL(scroller) {
+  const itemH = 60, centerY = scroller.scrollTop + scroller.offsetHeight/2;
   let closest = null, dist = Infinity;
   scroller.querySelectorAll('.picker-item').forEach(item => {
     item.classList.remove('selected');
-    const d = Math.abs(centerY - (item.offsetTop + itemH / 2));
+    const d = Math.abs(centerY - (item.offsetTop + itemH/2));
     if (d < dist) { dist = d; closest = item; }
   });
   if (closest) closest.classList.add('selected');
 }
 
-function getPickerVal(id) {
-  const getSelected = (s) => {
-    const el = document.getElementById(s);
-    if (!el) return 0;
-    const sel = el.querySelector('.picker-item.selected');
-    return sel ? parseInt(sel.dataset.val) : 0;
-  };
-  return getSelected(`ps-${id}-min`) * 60 + getSelected(`ps-${id}-sec`);
+function pickerVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  const sel = el.querySelector('.picker-item.selected');
+  return sel ? parseInt(sel.dataset.val) : 0;
 }
 
-// ─────────────────── CONFIG SCREEN BUILD ─────────────────────────
-function buildConfigScreen(m) {
-  document.getElementById('config-title').textContent = MODES[m];
-  const c = document.getElementById('config-fields');
-
-  if (m === 'amrap') {
-    c.innerHTML = timePicker('duration', 'Duration', 10, 0, 99);
-    requestAnimationFrame(() => { initScroller('ps-duration-min', 10); initScroller('ps-duration-sec', 0); });
-  } else if (m === 'countdown') {
-    c.innerHTML = timePicker('duration', 'Duration', 5, 0, 99);
-    requestAnimationFrame(() => { initScroller('ps-duration-min', 5); initScroller('ps-duration-sec', 0); });
-  } else if (m === 'hiit') {
-    c.innerHTML =
-      timePicker('work', 'Work', 0, 40, 10) +
-      timePicker('rest', 'Rest', 0, 20, 10) +
-      numRow('rounds', 'Rounds', 8, 1, 50, 1);
-    requestAnimationFrame(() => {
-      initScroller('ps-work-min', 0); initScroller('ps-work-sec', 40);
-      initScroller('ps-rest-min', 0); initScroller('ps-rest-sec', 20);
-    });
-  } else if (m === 'tabata') {
-    c.innerHTML = numRow('rounds', 'Rounds', 8, 1, 20, 1);
+// ──────────────────── COLLECT CONFIG ─────────────────────────────
+function collectConfig() {
+  const c = {};
+  if (mode === 'interval') {
+    c.work = pickerVal('ps-work-min') * 60 + pickerVal('ps-work-sec');
+    c.rest = pickerVal('ps-rest-min') * 60 + pickerVal('ps-rest-sec');
+    c.rounds = pickerVal('ps-rounds');
+  } else if (mode === 'countdown') {
+    c.duration = pickerVal('ps-dur-min') * 60 + pickerVal('ps-dur-sec');
+  } else if (mode === 'stopwatch') {
+    if (submode === 'fortime') {
+      c.cap = pickerVal('ps-cap-min') * 60 + pickerVal('ps-cap-sec');
+    }
   }
-}
-
-function getVals() {
-  const out = {};
-  if (document.getElementById('picker-duration')) out.duration = getPickerVal('duration');
-  if (document.getElementById('picker-work'))     out.work = getPickerVal('work');
-  if (document.getElementById('picker-rest'))     out.rest = getPickerVal('rest');
-  document.querySelectorAll('[id^="nv-"]').forEach(el => {
-    out[el.id.slice(3)] = +el.textContent;
-  });
-  return out;
+  return c;
 }
 
 // ──────────────────────────── PHASES ─────────────────────────────
-function buildPhases(c, m) {
-  if (m === 'amrap' || m === 'countdown') {
-    return [{ name: 'GO', dur: c.duration * 1000, type: 'go', round: 1 }];
-  } else if (m === 'hiit') {
+function buildPhases(c) {
+  if (mode === 'interval') {
     const p = [];
     for (let i = 1; i <= c.rounds; i++) {
-      p.push({ name: 'WORK', dur: c.work * 1000, type: 'go',   round: i });
-      p.push({ name: 'REST', dur: c.rest * 1000, type: 'rest', round: i });
+      p.push({ name:'WORK', dur: c.work*1000, type:'go', round:i });
+      if (c.rest > 0) p.push({ name:'REST', dur: c.rest*1000, type:'rest', round:i });
     }
     return p;
-  } else {
-    const p = [];
-    for (let i = 1; i <= c.rounds; i++) {
-      p.push({ name: 'WORK', dur: 20000, type: 'go',   round: i });
-      p.push({ name: 'REST', dur: 10000, type: 'rest', round: i });
-    }
-    return p;
+  } else if (mode === 'countdown') {
+    return [{ name: submode === 'amrap' ? 'AMRAP' : 'GO', dur: c.duration*1000, type:'go', round:1 }];
+  } else { // stopwatch
+    const cap = (c.cap && c.cap > 0) ? c.cap * 1000 : 359999000; // ~100 hrs
+    return [{ name: submode === 'fortime' ? 'FOR TIME' : 'GO', dur: cap, type:'go', round:1 }];
   }
 }
 
 // ─────────────────── PRE-START COUNTDOWN ─────────────────────────
 function beginCountdown() {
-  cfg = getVals();
-  if ((mode === 'amrap' || mode === 'countdown') && cfg.duration < 1) return;
-  if (mode === 'hiit' && cfg.work < 5) return;
+  cfg = collectConfig();
+  if (mode === 'interval' && cfg.work < 1) return;
+  if (mode === 'countdown' && cfg.duration < 1) return;
 
   initAudio();
-  startKeepAlive();
   showScreen('countdown');
 
   const cdEl = document.getElementById('cd-number');
@@ -657,20 +690,13 @@ function beginCountdown() {
 
   function showCount() {
     cdEl.textContent = count;
-    cdEl.classList.remove('pop');
-    void cdEl.offsetWidth;
-    cdEl.classList.add('pop');
+    cdEl.classList.remove('pop'); void cdEl.offsetWidth; cdEl.classList.add('pop');
     beep(440 + (10 - count) * 40, 0.15);
-
-    if (count > 1) {
-      count--;
-      countdownTimeout = setTimeout(showCount, 900);
-    } else {
+    if (count > 1) { count--; countdownTimeout = setTimeout(showCount, 900); }
+    else {
       countdownTimeout = setTimeout(() => {
         cdEl.textContent = 'GO';
-        cdEl.classList.remove('pop');
-        void cdEl.offsetWidth;
-        cdEl.classList.add('pop');
+        cdEl.classList.remove('pop'); void cdEl.offsetWidth; cdEl.classList.add('pop');
         multiBeep(1047, 2, 100);
         doFlash(getComputedStyle(document.documentElement).getPropertyValue('--go').trim());
         countdownTimeout = setTimeout(startTimer, 600);
@@ -682,17 +708,14 @@ function beginCountdown() {
 
 // ──────────────────────────── START ──────────────────────────────
 function startTimer() {
-  const phases = buildPhases(cfg, mode);
+  const phases = buildPhases(cfg);
   Object.assign(ts, {
-    status: 'running', phaseIdx: 0, phases, round: 1,
-    intervalId: null, lastRemSec: -1,
-    phaseWallStart: Date.now(), pausedElapsed: 0,
+    status:'running', phaseIdx:0, phases, round:1,
+    intervalId:null, lastRemSec:-1,
+    phaseWallStart: Date.now(), pausedElapsed:0,
   });
   acquireWakeLock();
-  startKeepAlive();
-  showScreen('timer');
-  renderTimer();
-  tick();
+  showScreen('timer'); renderTimer(); tick();
 }
 
 // ──────────────────────────── TICK ───────────────────────────────
@@ -702,8 +725,11 @@ function tick() {
     if (ts.status !== 'running') return;
     const elapsed = getPhaseElapsed();
     const phase = ts.phases[ts.phaseIdx];
+    const isCountUp = (submode === 'amrap' || mode === 'stopwatch');
 
-    if (mode === 'amrap') {
+    if (isCountUp && mode !== 'stopwatch') {
+      if (elapsed >= phase.dur) { ts.pausedElapsed = phase.dur; finish(); return; }
+    } else if (mode === 'stopwatch') {
       if (elapsed >= phase.dur) { ts.pausedElapsed = phase.dur; finish(); return; }
     } else {
       const remMs = phase.dur - elapsed;
@@ -716,19 +742,14 @@ function tick() {
         const overshoot = elapsed - phase.dur;
         const nextIdx = ts.phaseIdx + 1;
         if (nextIdx >= ts.phases.length) { finish(); return; }
-        ts.phaseIdx = nextIdx;
-        ts.pausedElapsed = 0;
-        ts.phaseWallStart = Date.now() - overshoot;
-        ts.lastRemSec = -1;
+        ts.phaseIdx = nextIdx; ts.pausedElapsed = 0;
+        ts.phaseWallStart = Date.now() - overshoot; ts.lastRemSec = -1;
         const next = ts.phases[ts.phaseIdx];
         ts.round = next.round;
         if (next.type === 'go') {
           doFlash(getComputedStyle(document.documentElement).getPropertyValue('--go').trim());
           multiBeep(1047, 2, 130);
-        } else {
-          doFlash('#FF3535');
-          multiBeep(330, 3, 110);
-        }
+        } else { doFlash('#FF3535'); multiBeep(330, 3, 110); }
       }
     }
     renderTimer();
@@ -736,14 +757,9 @@ function tick() {
 }
 
 function finish() {
-  ts.status = 'done';
-  clearInterval(ts.intervalId);
-  ts.intervalId = null;
+  ts.status = 'done'; clearInterval(ts.intervalId); ts.intervalId = null;
   releaseWakeLock();
-  stopKeepAlive();
-  renderTimer();
-  doFlash('#C8FF00');
-  alarmBeep();
+  renderTimer(); doFlash('#C8FF00'); alarmBeep();
 }
 
 // ──────────────────────────── RENDER ─────────────────────────────
@@ -752,13 +768,14 @@ function renderTimer() {
   const done = ts.status === 'done';
   const paused = ts.status === 'paused';
   const elapsed = getPhaseElapsed();
+  const isCountUp = (submode === 'amrap' || mode === 'stopwatch');
 
   const badge = document.getElementById('phase-badge');
   badge.textContent = done ? 'DONE' : phase.name;
   badge.className = 'phase-badge' + (done ? ' done' : phase.type === 'rest' ? ' rest' : '');
 
-  let displayMs = mode === 'amrap' ? elapsed : Math.max(0, phase.dur - elapsed);
-  const totalSec = mode === 'amrap' ? Math.floor(displayMs / 1000) : Math.ceil(displayMs / 1000);
+  let displayMs = isCountUp ? elapsed : Math.max(0, phase.dur - elapsed);
+  const totalSec = isCountUp ? Math.floor(displayMs/1000) : Math.ceil(displayMs/1000);
   const mins = Math.floor(totalSec / 60);
   const secs = totalSec % 60;
 
@@ -772,22 +789,18 @@ function renderTimer() {
   fill.className = 'progress-fill' + (phase.type === 'rest' ? ' rest' : '');
 
   const roundEl = document.getElementById('round-display');
-  roundEl.innerHTML = (mode === 'hiit' || mode === 'tabata')
-    ? `Round<strong>${phase.round} / ${cfg.rounds || 8}</strong>` : '';
+  roundEl.innerHTML = (mode === 'interval')
+    ? `Round<strong>${phase.round} / ${cfg.rounds}</strong>` : '';
 
   const nextEl = document.getElementById('next-up');
   const nextIdx = ts.phaseIdx + 1;
-  if (done) {
-    nextEl.className = 'next-up done-msg';
-    nextEl.textContent = 'Great work! 💪';
-  } else if (nextIdx < ts.phases.length) {
+  if (done) { nextEl.className = 'next-up done-msg'; nextEl.textContent = 'Great work! 💪'; }
+  else if (nextIdx < ts.phases.length) {
     const next = ts.phases[nextIdx];
     nextEl.className = 'next-up';
     nextEl.innerHTML = `Next: <span>${next.name} — ${Math.round(next.dur/1000)}s</span>`;
-  } else if (mode !== 'amrap') {
-    nextEl.className = 'next-up';
-    nextEl.innerHTML = `<span>Last phase!</span>`;
-  } else { nextEl.textContent = ''; }
+  } else if (!isCountUp) { nextEl.className = 'next-up'; nextEl.innerHTML = `<span>Last phase!</span>`; }
+  else { nextEl.textContent = ''; }
 
   const btn = document.getElementById('play-pause-btn');
   if (done) { btn.textContent = 'DONE'; btn.className = 'ctrl-btn primary done-state'; }
@@ -799,27 +812,19 @@ function renderTimer() {
 function togglePlayPause() {
   if (ts.status === 'done') return;
   if (ts.status === 'running') {
-    ts.pausedElapsed = getPhaseElapsed();
-    ts.status = 'paused';
-    clearInterval(ts.intervalId);
-    ts.intervalId = null;
+    ts.pausedElapsed = getPhaseElapsed(); ts.status = 'paused';
+    clearInterval(ts.intervalId); ts.intervalId = null;
   } else if (ts.status === 'paused') {
-    ts.status = 'running';
-    ts.phaseWallStart = Date.now();
-    tick();
-    acquireWakeLock();
+    ts.status = 'running'; ts.phaseWallStart = Date.now();
+    tick(); acquireWakeLock();
   }
   renderTimer();
 }
 
 function resetTimer() {
-  clearInterval(ts.intervalId);
-  ts.intervalId = null;
-  ts.status = 'idle';
-  clearTimeout(countdownTimeout);
-  releaseWakeLock();
-  stopKeepAlive();
-  showScreen('mode');
+  clearInterval(ts.intervalId); ts.intervalId = null;
+  ts.status = 'idle'; clearTimeout(countdownTimeout);
+  releaseWakeLock(); showScreen('mode');
 }
 
 // ──────────────────────────── AUDIO ──────────────────────────────
@@ -877,32 +882,8 @@ function alarmBeep() {
 function doFlash(color) {
   const el = document.getElementById('flash');
   el.style.background = color;
-  el.classList.remove('flash-in');
-  void el.offsetWidth;
+  el.classList.remove('flash-in'); void el.offsetWidth;
   el.classList.add('flash-in');
-}
-
-// ──────────────────── AUDIO KEEP-ALIVE ───────────────────────────
-// iOS Safari suspends JS when screen locks. Pure silence doesn't work —
-// iOS detects it. This uses a real 100Hz tone at near-inaudible volume.
-let keepAliveAudio = null;
-
-function startKeepAlive() {
-  if (keepAliveAudio) return;
-  try {
-    keepAliveAudio = new Audio('data:audio/wav;base64,UklGRiR9AABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQB9AAAAAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/wAAAwAHAAsADwATABYAGgAdACAAIwAmACgAKgAsAC4ALwAwADEAMQAyADEAMQAwAC8ALgAsACoAKAAmACMAIAAdABoAFgATAA8ACwAHAAMAAAD9//n/9f/x/+3/6v/m/+P/4P/d/9r/2P/W/9T/0v/R/9D/z//P/87/z//P/9D/0f/S/9T/1v/Y/9r/3f/g/+P/5v/q/+3/8f/1//n//f8AAAMABwALAA8AEwAWABoAHQAgACMAJgAoACoALAAuAC8AMAAxADEAMgAxADEAMAAvAC4ALAAqACgAJgAjACAAHQAaABYAEwAPAAsABwADAAAA/f/5//X/8f/t/+r/5v/j/+D/3f/a/9j/1v/U/9L/0f/Q/8//z//O/8//z//Q/9H/0v/U/9b/2P/a/93/4P/j/+b/6v/t//H/9f/5//3/AAADAAcACwAPABMAFgAaAB0AIAAjACYAKAAqACwALgAvADAAMQAxADIAMQAxADAALwAuACwAKgAoACYAIwAgAB0AGgAWABMADwALAAcAAwAAAP3/+f/1//H/7f/q/+b/4//g/93/2v/Y/9b/1P/S/9H/0P/P/8//zv/P/8//0P/R/9L/1P/W/9j/2v/d/+D/4//m/+r/7f/x//X/+f/9/w==');
-    keepAliveAudio.loop = true;
-    keepAliveAudio.volume = 0.01;
-    const p = keepAliveAudio.play();
-    if (p && p.catch) p.catch(() => {});
-  } catch(e) {}
-}
-
-function stopKeepAlive() {
-  if (keepAliveAudio) {
-    try { keepAliveAudio.pause(); keepAliveAudio.src = ''; } catch(e) {}
-    keepAliveAudio = null;
-  }
 }
 
 // ──────────────────────── WAKE LOCK ──────────────────────────────
@@ -917,28 +898,19 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && ts.status === 'running') {
     acquireWakeLock();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    if (keepAliveAudio && keepAliveAudio.paused) {
-      const p = keepAliveAudio.play();
-      if (p && p.catch) p.catch(() => {});
-    }
-    startKeepAlive();
 
     const prevPhaseIdx = ts.phaseIdx;
     let elapsed = getPhaseElapsed();
     let phase = ts.phases[ts.phaseIdx];
     while (elapsed >= phase.dur && ts.phaseIdx < ts.phases.length - 1) {
       const overshoot = elapsed - phase.dur;
-      ts.phaseIdx++;
-      const next = ts.phases[ts.phaseIdx];
-      ts.round = next.round;
-      ts.pausedElapsed = 0;
+      ts.phaseIdx++; const next = ts.phases[ts.phaseIdx];
+      ts.round = next.round; ts.pausedElapsed = 0;
       ts.phaseWallStart = Date.now() - overshoot;
       phase = next; elapsed = overshoot;
     }
-    if (elapsed >= phase.dur && ts.phaseIdx >= ts.phases.length - 1) {
-      finish();
-    } else {
-      // If phases were skipped while backgrounded, fire a loud catch-up alarm
+    if (elapsed >= phase.dur && ts.phaseIdx >= ts.phases.length - 1) { finish(); }
+    else {
       if (ts.phaseIdx !== prevPhaseIdx) {
         doFlash(phase.type === 'rest' ? '#FF3535' : '#C8FF00');
         alarmBeep();
@@ -947,9 +919,8 @@ document.addEventListener('visibilitychange', () => {
     }
   }
 });
-</script>
-<script>
-// Register service worker for PWA
+
+// ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
