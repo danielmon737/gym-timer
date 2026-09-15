@@ -1,6 +1,24 @@
 # Gym Timer PWA
 
-A workout timer with HIIT, Tabata, AMRAP, and Countdown modes.
+A workout timer with HIIT, Tabata, AMRAP, and Countdown modes, plus a home for the
+week's strength sessions.
+
+## Weekly sessions
+
+The home screen lists this week's strength sessions from `sessions.json` and runs each one
+as guided phases: untimed sets with a Done button and a rep stepper, timed holds, and
+enforced rest between sets (skip or +30 s). Exercise names and types come from
+`exercises.json`.
+
+- `sessions.json` is rewritten each week by the coaching review and pushed. The app fetches
+  it network-first, so a new week shows up on the next open without a cache bump. Offline,
+  the last downloaded copy is used.
+- Done state and session logs stay in the phone's localStorage. "Copy log" and "Copy week
+  log" put a plain-text summary on the clipboard to paste into the weekly review.
+- Block shapes: `{exercise, sets, reps|seconds, rest, load?, note?, optional?}`,
+  `{type:"circuit", rounds, rest, items:[{exercise, reps|seconds, load?}]}`, and
+  `{type:"amrap", exercise, seconds}`. The exercise `type` decides untimed vs timed and
+  per-side: `reps`, `reps_side`, `time`, `time_side`.
 
 ## How to deploy (free, 5 minutes)
 

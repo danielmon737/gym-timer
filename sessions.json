@@ -1,0 +1,47 @@
+{
+  "week": "2026-W38",
+  "updated": "2026-09-15",
+  "sessions": [
+    {
+      "id": "2026-09-14-circuit",
+      "date": "2026-09-14",
+      "day": "Mon",
+      "name": "Circuit",
+      "done": true,
+      "note": "Done after the easy 5.3 km. Logged at the Sep 14 review.",
+      "blocks": [
+        { "type": "circuit", "rounds": 5, "rest": 0,
+          "items": [
+            { "exercise": "pullup", "reps": 4 },
+            { "exercise": "pushup", "reps": 8 },
+            { "exercise": "bss", "reps": 4, "load": "15 lb KB" }
+          ] }
+      ]
+    },
+    {
+      "id": "2026-09-16-core",
+      "date": "2026-09-16",
+      "day": "Wed",
+      "name": "Core",
+      "note": "Priority session of the week. Rested sets, not a circuit. No rowing if legs are sore.",
+      "blocks": [
+        { "exercise": "plank",      "sets": 3, "seconds": 45, "rest": 60 },
+        { "exercise": "side_plank", "sets": 2, "seconds": 30, "rest": 45 },
+        { "exercise": "ab_roller",  "sets": 3, "reps": 8,     "rest": 90, "note": "from knees" },
+        { "exercise": "pullup",     "sets": 4, "reps": 5,     "rest": 90, "optional": true }
+      ]
+    },
+    {
+      "id": "2026-09-19-strength-b",
+      "date": "2026-09-19",
+      "day": "Sat",
+      "name": "Strength B · light",
+      "when": "after the tempo",
+      "note": "Second exposure to split squats. Stop 2 short of failure on everything. No bodyweight squats this week.",
+      "blocks": [
+        { "exercise": "glute_bridge", "sets": 3, "reps": 12, "rest": 60 },
+        { "exercise": "bss",          "sets": 2, "reps": 6,  "rest": 90, "load": "15 lb KB" }
+      ]
+    }
+  ]
+}

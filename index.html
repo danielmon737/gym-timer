@@ -305,6 +305,81 @@
     .ctrl-btn.primary.paused { background: var(--surface); color: var(--go); border-color: var(--go); }
     .ctrl-btn.primary.done-state { background: var(--surface); color: var(--dim); border-color: var(--dim); }
 
+    /* ── HOME / SESSIONS ── */
+    [hidden] { display: none !important; }
+    #screen-mode { justify-content: flex-start; gap: 10px; }
+    .mode-header { margin-top: 8px; margin-bottom: 4px; }
+    .section-label {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--neutral); margin: 12px 2px 0;
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .section-label span { letter-spacing: 1px; text-transform: none; }
+    #sess-list { display: flex; flex-direction: column; gap: 8px; }
+    .sess-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 16px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color 0.1s, transform 0.1s;
+    }
+    .sess-card:active { transform: scale(0.98); border-color: var(--go); }
+    .sess-card.today { border-color: var(--go); }
+    .sess-card.done { opacity: 0.55; }
+    .sess-main { flex: 1; min-width: 0; }
+    .sess-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); line-height: 1; }
+    .sess-title em { font-style: normal; color: var(--go); }
+    .sess-meta { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--neutral); margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sess-icon { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--neutral); width: 28px; text-align: right; flex-shrink: 0; }
+    .sess-card.today .sess-icon, .sess-card.done .sess-icon { color: var(--go); }
+    .sess-empty { text-align: center; color: var(--neutral); font-size: 13px; letter-spacing: 1px; padding: 18px; background: var(--surface); border: 1px dashed var(--border); border-radius: 12px; line-height: 1.6; }
+    .text-btn { background: none; border: none; color: var(--neutral); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 8px 2px; cursor: pointer; }
+    .text-btn:active { color: var(--go); }
+    .home-foot { display: flex; justify-content: flex-end; align-items: center; }
+    .run-ex-name.rest { color: var(--rest); }
+
+    /* ── SESSION DETAIL ── */
+    #screen-session { justify-content: flex-start; }
+    .sess-note { font-size: 15px; color: var(--text); line-height: 1.45; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--go); border-radius: 8px; margin-bottom: 10px; }
+    .sess-note.muted { border-left-color: var(--neutral); color: var(--neutral); }
+    .block-list { display: flex; flex-direction: column; gap: 6px; }
+    .block-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .block-row.optional { border-style: dashed; }
+    .block-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--text); }
+    .block-name small { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: var(--neutral); margin-left: 6px; text-transform: uppercase; }
+    .block-rx { font-size: 16px; color: var(--go); letter-spacing: 1px; text-align: right; flex-shrink: 0; max-width: 60%; }
+    .block-rx small { display: block; font-size: 11px; color: var(--neutral); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+    .sess-est { text-align: center; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--neutral); margin-top: 12px; }
+    .detail-actions { margin-top: auto; padding-top: 12px; flex-shrink: 0; }
+
+    /* ── SESSION RUN ── */
+    #screen-run { justify-content: space-between; }
+    .end-btn { background: none; border: 1px solid var(--border); color: var(--neutral); font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 3px; padding: 7px 12px; border-radius: 5px; cursor: pointer; margin-left: 10px; }
+    .end-btn:active { border-color: var(--rest); color: var(--rest); }
+    .run-ex { text-align: center; }
+    .run-ex-name { font-family: 'Bebas Neue', sans-serif; font-size: clamp(34px, 10vw, 48px); letter-spacing: 3px; color: var(--text); line-height: 1; }
+    .run-ex-side { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--go); margin-top: 6px; min-height: 22px; }
+    .run-ex-sub { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--neutral); min-height: 18px; text-align: center; }
+    .stepper { display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .stepper .num-btn { width: 72px; height: 88px; font-size: 44px; }
+    .stepper-val { font-family: 'Bebas Neue', sans-serif; font-size: clamp(96px, 26vw, 140px); line-height: 0.9; letter-spacing: 4px; color: var(--go); min-width: 130px; text-align: center; }
+    .stepper-label { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--neutral); text-align: center; margin-top: 4px; }
+    .run-elapsed { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--dim); text-align: center; margin-top: 4px; }
+
+    /* ── SUMMARY ── */
+    #screen-summary { justify-content: flex-start; }
+    .sum-head { text-align: center; margin: 8px 0 14px; flex-shrink: 0; }
+    .sum-head h2 { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; color: var(--go); line-height: 1; }
+    .sum-head p { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--neutral); margin-top: 6px; }
+    .sum-line { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
+    .sum-ex { color: var(--text); letter-spacing: 1px; }
+    .sum-act { color: var(--go); letter-spacing: 1px; text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    .sum-act small { display: block; color: var(--neutral); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+    .sum-act input { width: 76px; background: var(--bg); border: 1px solid var(--border); color: var(--go); font-family: 'Bebas Neue', sans-serif; font-size: 22px; text-align: center; border-radius: 6px; padding: 4px; }
+    textarea.notes { width: 100%; min-height: 64px; margin-top: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Barlow Condensed', sans-serif; font-size: 15px; padding: 10px 12px; resize: vertical; user-select: text; -webkit-user-select: text; flex-shrink: 0; }
+    .sum-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 12px; flex-shrink: 0; }
+    .toast { position: fixed; left: 50%; bottom: max(env(safe-area-inset-bottom), 24px); transform: translateX(-50%) translateY(20px); background: var(--go); color: var(--bg); font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; padding: 10px 18px; border-radius: 8px; opacity: 0; transition: opacity 0.2s, transform 0.2s; z-index: 300; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
     /* ── FLASH ── */
     #flash { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 200; }
     #flash.flash-in { animation: flashAnim 0.35s ease-out forwards; }
@@ -321,12 +396,18 @@
 <body>
 <div id="flash"></div>
 
-<!-- ── MODE SELECT ── -->
+<!-- ── HOME ── -->
 <div class="screen active" id="screen-mode">
   <div class="mode-header">
     <h1>GYM TIMER</h1>
-    <p>Select a mode</p>
+    <p id="home-sub">Loading plan…</p>
   </div>
+  <div class="section-label">This week <span id="week-label"></span></div>
+  <div id="sess-list"></div>
+  <div class="home-foot">
+    <button class="text-btn" id="copy-week-btn" onclick="copyWeekLog()" hidden>Copy week log</button>
+  </div>
+  <div class="section-label">Free timer</div>
   <div class="mode-btn" onclick="selectMode('interval')">
     <div class="mode-label">INTERVAL  |  EMOM  |  TABATA</div>
   </div>
@@ -379,6 +460,63 @@
     <button class="ctrl-btn primary" id="play-pause-btn" onclick="togglePlayPause()">PAUSE</button>
   </div>
 </div>
+
+<!-- ── SESSION DETAIL ── -->
+<div class="screen" id="screen-session">
+  <div class="config-top-bar">
+    <button class="back-btn" onclick="showScreen('mode')">
+      <span class="back-arrow">‹</span> BACK
+    </button>
+    <div class="config-title-box">
+      <div class="config-title" id="sess-title">SESSION</div>
+    </div>
+  </div>
+  <div id="sess-detail"></div>
+  <div class="detail-actions">
+    <button class="start-btn" onclick="startSession()">START SESSION</button>
+    <div style="text-align:center; margin-top:6px;">
+      <button class="text-btn" onclick="markDoneManual()">Did it without the timer · mark done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SESSION RUN ── -->
+<div class="screen" id="screen-run">
+  <div class="timer-top">
+    <div class="phase-badge" id="run-badge" aria-live="assertive" role="status">SET</div>
+    <div style="display:flex; align-items:center;">
+      <div class="round-display" id="run-progress"></div>
+      <button class="end-btn" onclick="endSessionEarly()">END</button>
+    </div>
+  </div>
+  <div class="timer-main">
+    <div class="run-ex">
+      <div class="run-ex-name" id="run-ex-name"></div>
+      <div class="run-ex-side" id="run-ex-side"></div>
+    </div>
+    <div id="run-display"></div>
+    <div class="run-ex-sub" id="run-ex-sub"></div>
+    <div class="progress-track"><div class="progress-fill" id="run-fill" style="width:0%"></div></div>
+    <div class="next-up" id="run-next" aria-live="polite"></div>
+  </div>
+  <div class="timer-controls" id="run-controls"></div>
+</div>
+
+<!-- ── SUMMARY ── -->
+<div class="screen" id="screen-summary">
+  <div class="sum-head">
+    <h2 id="sum-title">DONE</h2>
+    <p id="sum-meta"></p>
+  </div>
+  <div class="block-list" id="sum-lines"></div>
+  <textarea class="notes" id="sum-notes" placeholder="Notes: how it felt, what to change"></textarea>
+  <div class="sum-actions">
+    <button class="ctrl-btn" onclick="showScreen('mode'); renderHome();">HOME</button>
+    <button class="ctrl-btn primary" onclick="copySessionLog()">COPY LOG</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 
 <script>
 // ─────────────────────────── STATE ───────────────────────────────
@@ -919,6 +1057,417 @@ document.addEventListener('visibilitychange', () => {
     }
   }
 });
+
+// ═══════════════════════ WEEKLY SESSIONS ═══════════════════════
+// Sessions come from ./sessions.json (written at the weekly review), exercises from
+// ./exercises.json. The runner below reuses the free timer's audio, flash, wake lock
+// and screen helpers but keeps its own state so the free timer is untouched.
+const LS = { log: 'gt_log_v1', done: 'gt_done_v1', data: 'gt_data_v1' };
+const S = {
+  plan: null, exMap: {}, session: null, record: null,
+  phases: [], results: [], idx: 0, status: 'idle',
+  wallStart: 0, pausedElapsed: 0, intervalId: null, lastRemSec: -1,
+  startedAt: 0, repsVal: 0,
+};
+
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function todayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function fmtMMSS(sec) { sec = Math.max(0, sec|0); return String(Math.floor(sec/60)).padStart(2,'0') + ':' + String(sec%60).padStart(2,'0'); }
+function fmtDate(iso) { const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const p = String(iso).split('-'); return p.length === 3 ? m[+p[1]-1] + ' ' + (+p[2]) : iso; }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1400); }
+
+// ── plan loading ──
+async function loadPlan() {
+  let plan = null, exs = null;
+  try {
+    const [p, e] = await Promise.all([
+      fetch('./sessions.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('./exercises.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+    plan = p; exs = e;
+  } catch(e) {}
+  const cached = lsGet(LS.data, null);
+  if (plan && exs) lsSet(LS.data, { plan, exs });
+  else if (cached) { plan = plan || cached.plan; exs = exs || cached.exs; }
+  S.plan = plan; S.exMap = {};
+  ((exs && exs.exercises) || []).forEach(x => { S.exMap[x.id] = x; });
+  renderHome();
+}
+
+function exName(id) { const x = S.exMap[id]; return x ? x.name : String(id).replace(/_/g, ' '); }
+function isSided(it) { const x = S.exMap[it.exercise]; return !!(it.side || (x && /_side$/.test(x.type || ''))); }
+function isTimed(it) { return it.seconds != null; }
+function blockRest(b) { return b.rest != null ? b.rest : 60; }
+function itemRx(it) { return (isTimed(it) ? it.seconds + ' s' : String(it.reps)) + (isSided(it) ? '/side' : ''); }
+function rxText(b) { return `${b.sets} × ${itemRx(b)}`; }
+function itemWorkSec(it) { return (isTimed(it) ? it.seconds : (it.reps || 0) * 4 + 10) * (isSided(it) ? 2 : 1); }
+function isDone(s) { return !!(s.done || lsGet(LS.done, {})[s.id]); }
+
+function estimateMin(s) {
+  let sec = 0;
+  (s.blocks || []).forEach(b => {
+    if (b.type === 'amrap') { sec += b.seconds || 0; return; }
+    if (b.type === 'circuit') {
+      for (let r = 0; r < b.rounds; r++) {
+        (b.items || []).forEach(it => { sec += itemWorkSec(it); });
+        if (r < b.rounds - 1) sec += blockRest(b);
+      }
+      return;
+    }
+    sec += (b.sets || 1) * (itemWorkSec(b) + blockRest(b));
+  });
+  return Math.max(1, Math.round(sec / 60));
+}
+
+// ── home ──
+function renderHome() {
+  const list = document.getElementById('sess-list');
+  const sub = document.getElementById('home-sub');
+  const wk = document.getElementById('week-label');
+  const copyBtn = document.getElementById('copy-week-btn');
+  if (!S.plan || !Array.isArray(S.plan.sessions) || !S.plan.sessions.length) {
+    sub.textContent = 'No plan loaded';
+    wk.textContent = '';
+    list.innerHTML = `<div class="sess-empty">No plan on this phone yet.<br>Open once with a connection to download this week.</div>`;
+    copyBtn.hidden = true;
+    return;
+  }
+  const today = todayISO();
+  const ss = S.plan.sessions;
+  const doneN = ss.filter(isDone).length;
+  sub.textContent = `${doneN} of ${ss.length} done`;
+  wk.textContent = [S.plan.week, S.plan.updated ? 'updated ' + fmtDate(S.plan.updated) : ''].filter(Boolean).join(' · ');
+  list.innerHTML = ss.map((s, i) => {
+    const done = isDone(s), isToday = s.date === today;
+    const meta = [ s.date ? fmtDate(s.date) : '', `~${estimateMin(s)} min`, s.location, s.when ].filter(Boolean).join(' · ');
+    const icon = done ? '✓' : isToday ? '▶' : '›';
+    return `<div class="sess-card${done ? ' done' : ''}${isToday && !done ? ' today' : ''}" onclick="openSession(${i})">
+      <div class="sess-main">
+        <div class="sess-title"><em>${esc(s.day || '')}</em> ${esc(s.name)}</div>
+        <div class="sess-meta">${esc(meta)}</div>
+      </div>
+      <div class="sess-icon">${icon}</div>
+    </div>`;
+  }).join('');
+  const ids = new Set(ss.map(s => s.id));
+  copyBtn.hidden = !lsGet(LS.log, []).some(r => ids.has(r.sessionId));
+}
+
+// ── session detail ──
+function openSession(i) {
+  const s = S.plan.sessions[i]; if (!s) return;
+  S.session = s;
+  document.getElementById('sess-title').textContent = `${s.day ? s.day + ' · ' : ''}${s.name}`.toUpperCase();
+  const parts = [];
+  if (isDone(s)) parts.push(`<div class="sess-note muted">Done ✓ — start again to repeat it, or go back.</div>`);
+  if (s.note) parts.push(`<div class="sess-note">${esc(s.note)}</div>`);
+  parts.push(`<div class="block-list">${(s.blocks || []).map(blockRowHTML).join('')}</div>`);
+  parts.push(`<div class="sess-est">~${estimateMin(s)} min with rest</div>`);
+  document.getElementById('sess-detail').innerHTML = parts.join('');
+  showScreen('session');
+}
+
+function blockRowHTML(b) {
+  if (b.type === 'circuit') {
+    const items = (b.items || []).map(it => `${exName(it.exercise)} ${itemRx(it)}${it.load ? ' @ ' + it.load : ''}`).join(' · ');
+    return `<div class="block-row"><div class="block-name">Circuit <small>${b.rounds} rounds</small></div><div class="block-rx">${esc(items)}<small>rest ${blockRest(b)} s between rounds</small></div></div>`;
+  }
+  if (b.type === 'amrap') {
+    return `<div class="block-row"><div class="block-name">${esc(exName(b.exercise))} <small>AMRAP</small></div><div class="block-rx">${Math.round((b.seconds || 0) / 60)} min<small>max reps · count them</small></div></div>`;
+  }
+  const sub = [`rest ${blockRest(b)} s`, b.load, b.note].filter(Boolean).join(' · ');
+  return `<div class="block-row${b.optional ? ' optional' : ''}"><div class="block-name">${esc(exName(b.exercise))}${b.optional ? ' <small>optional</small>' : ''}</div><div class="block-rx">${esc(rxText(b))}<small>${esc(sub)}</small></div></div>`;
+}
+
+// ── phase expansion ──
+function buildSessionPhases(s) {
+  const P = [];
+  const work = (it, blockIdx, itemIdx, setIdx, setsTotal, roundLabel, extra) => {
+    const sided = isSided(it), timed = isTimed(it);
+    (sided ? ['LEFT', 'RIGHT'] : [null]).forEach(side => P.push(Object.assign({
+      kind: 'work', timed, dur: timed ? it.seconds * 1000 : null,
+      ex: exName(it.exercise), side, target: timed ? it.seconds : (it.reps || 0),
+      load: it.load || '', note: it.note || '',
+      blockIdx, itemIdx, setIdx, setsTotal, roundLabel: roundLabel || '',
+    }, extra || {})));
+  };
+  (s.blocks || []).forEach((b, bi) => {
+    if (b.type === 'amrap') {
+      P.push({ kind: 'work', timed: true, dur: (b.seconds || 0) * 1000, ex: exName(b.exercise), side: null,
+        target: b.seconds || 0, load: b.load || '', note: 'max reps · count them',
+        blockIdx: bi, itemIdx: 0, setIdx: 0, setsTotal: 1, roundLabel: '', amrap: true });
+      return;
+    }
+    if (b.type === 'circuit') {
+      for (let r = 0; r < b.rounds; r++) {
+        (b.items || []).forEach((it, ii) => work(it, bi, ii, r, b.rounds, `Round ${r + 1} of ${b.rounds}`));
+        if (blockRest(b) > 0 && r < b.rounds - 1) P.push({ kind: 'rest', timed: true, dur: blockRest(b) * 1000, blockIdx: bi });
+      }
+      return;
+    }
+    for (let k = 0; k < (b.sets || 1); k++) {
+      work(b, bi, 0, k, b.sets || 1, '');
+      if (blockRest(b) > 0) P.push({ kind: 'rest', timed: true, dur: blockRest(b) * 1000, blockIdx: bi });
+    }
+  });
+  while (P.length && P[P.length - 1].kind === 'rest') P.pop();
+  if (P.length && P[0].timed) P.unshift({ kind: 'rest', ready: true, timed: true, dur: 5000, blockIdx: -1 });
+  return P;
+}
+
+// ── runner ──
+function sElapsed() { return S.status === 'running' ? S.pausedElapsed + (Date.now() - S.wallStart) : S.pausedElapsed; }
+
+function startSession() {
+  const s = S.session; if (!s) return;
+  S.phases = buildSessionPhases(s);
+  if (!S.phases.length) return;
+  S.results = S.phases.map(() => ({}));
+  S.status = 'running'; S.startedAt = Date.now();
+  initAudio(); acquireWakeLock();
+  enterPhase(0, 0, false);
+  showScreen('run'); renderRunStatic(); runTick();
+}
+
+function enterPhase(i, overshoot, cue) {
+  S.idx = i; S.pausedElapsed = 0; S.wallStart = Date.now() - (overshoot || 0); S.lastRemSec = -1;
+  const p = S.phases[i];
+  S.repsVal = (p.kind === 'work' && !p.timed) ? p.target : 0;
+  if (cue) {
+    if (p.kind === 'rest') { doFlash('#FF3535'); multiBeep(330, 3, 110); }
+    else { doFlash('#C8FF00'); multiBeep(1047, 2, 130); }
+  }
+}
+
+function runTick() {
+  if (S.intervalId) return;
+  S.intervalId = setInterval(() => {
+    if (S.status !== 'running') return;
+    const p = S.phases[S.idx]; if (!p) return;
+    const el = sElapsed();
+    if (p.timed) {
+      const remSec = Math.ceil((p.dur - el) / 1000);
+      if (remSec !== S.lastRemSec) { S.lastRemSec = remSec; if (remSec >= 1 && remSec <= 3) beep(880, 0.15); }
+      if (el >= p.dur) { completePhase(el - p.dur, true); return; }
+    }
+    renderRunDynamic();
+  }, 50);
+}
+
+// Records the current phase's result and moves on. Returns false when the session ended.
+function completePhase(overshoot, cue) {
+  const p = S.phases[S.idx]; const el = sElapsed(); const r = S.results[S.idx];
+  if (p.kind === 'work') {
+    if (p.timed) r.actual = Math.min(p.target, Math.round(el / 1000));
+    else { r.actual = S.repsVal; r.sec = Math.round(el / 1000); }
+  } else { r.skipped = el < p.dur - 500; r.dur = Math.round(el / 1000); }
+  const next = S.idx + 1;
+  if (next >= S.phases.length) { finishSession(false); return false; }
+  enterPhase(next, overshoot || 0, cue);
+  renderRunStatic();
+  return true;
+}
+
+function doneSet()   { if (S.status === 'running') completePhase(0, true); }
+function skipRest()  { if (S.status === 'running') completePhase(0, true); }
+function skipHold()  { if (S.status === 'running' || S.status === 'paused') { if (S.status === 'paused') { S.status = 'running'; S.wallStart = Date.now(); runTick(); } completePhase(0, true); } }
+function extendRest(sec) { const p = S.phases[S.idx]; if (p && p.kind === 'rest') { p.dur += sec * 1000; renderRunDynamic(); } }
+function stepReps(d) { S.repsVal = Math.max(0, S.repsVal + d); renderRunDynamic(); }
+
+function toggleRunPause() {
+  if (S.status === 'running') { S.pausedElapsed = sElapsed(); S.status = 'paused'; clearInterval(S.intervalId); S.intervalId = null; }
+  else if (S.status === 'paused') { S.status = 'running'; S.wallStart = Date.now(); runTick(); acquireWakeLock(); }
+  renderRunStatic();
+}
+
+function endSessionEarly() {
+  if (S.status === 'done') return;
+  if (!confirm('End the session now? What you did so far gets logged.')) return;
+  finishSession(true);
+}
+
+function renderRunStatic() {
+  const p = S.phases[S.idx]; if (!p) return;
+  const isRest = p.kind === 'rest', isReady = !!p.ready, paused = S.status === 'paused';
+  const badge = document.getElementById('run-badge');
+  badge.textContent = isReady ? 'READY' : isRest ? 'REST' : p.timed ? (p.amrap ? 'AMRAP' : 'HOLD') : 'SET';
+  badge.className = 'phase-badge' + (isRest && !isReady ? ' rest' : '');
+  const setLabel = isRest ? '' : (p.roundLabel || `Set ${p.setIdx + 1} of ${p.setsTotal}`);
+  document.getElementById('run-progress').innerHTML = `${S.idx + 1} / ${S.phases.length}<strong>${esc(setLabel) || '&nbsp;'}</strong>`;
+
+  const nameEl = document.getElementById('run-ex-name');
+  const sideEl = document.getElementById('run-ex-side');
+  const subEl  = document.getElementById('run-ex-sub');
+  if (isRest) { nameEl.textContent = isReady ? 'GET READY' : 'REST'; nameEl.classList.toggle('rest', !isReady); sideEl.textContent = ''; subEl.textContent = ''; }
+  else {
+    nameEl.textContent = p.ex; nameEl.classList.remove('rest');
+    sideEl.textContent = p.side || '';
+    subEl.textContent = [p.load, p.note].filter(Boolean).join(' · ');
+  }
+
+  const disp = document.getElementById('run-display');
+  if (p.timed) disp.innerHTML = `<div class="big-time${isRest && !isReady ? ' rest' : ' go'}" id="run-time">00:00</div>`;
+  else disp.innerHTML = `<div class="stepper"><button class="num-btn" onclick="stepReps(-1)" aria-label="minus one rep">−</button><div class="stepper-val" id="run-reps">${S.repsVal}</div><button class="num-btn" onclick="stepReps(1)" aria-label="plus one rep">+</button></div><div class="stepper-label">reps · target ${p.target}${p.side ? ' per side' : ''}</div><div class="run-elapsed" id="run-elapsed">00:00</div>`;
+
+  const n = S.phases[S.idx + 1];
+  const nextTxt = !n ? 'Last one'
+    : n.kind === 'rest' ? `Rest ${Math.round(n.dur / 1000)} s`
+    : `${n.ex}${n.side ? ' ' + n.side.toLowerCase() : ''} · ${n.timed ? n.target + ' s' : n.target + ' reps'}${n.load ? ' @ ' + n.load : ''}`;
+  document.getElementById('run-next').innerHTML = `Next: <span>${esc(nextTxt)}</span>`;
+
+  const ctr = document.getElementById('run-controls');
+  if (isReady) ctr.innerHTML = `<button class="ctrl-btn primary" onclick="skipRest()">START NOW</button>`;
+  else if (isRest) ctr.innerHTML = `<button class="ctrl-btn" onclick="extendRest(30)">+30 S</button><button class="ctrl-btn primary" onclick="skipRest()">SKIP REST</button>`;
+  else if (p.timed) ctr.innerHTML = `<button class="ctrl-btn" onclick="skipHold()">${p.amrap ? 'FINISH' : 'SKIP'}</button><button class="ctrl-btn primary${paused ? ' paused' : ''}" onclick="toggleRunPause()">${paused ? 'RESUME' : 'PAUSE'}</button>`;
+  else ctr.innerHTML = `<button class="ctrl-btn primary" onclick="doneSet()">DONE</button>`;
+
+  document.getElementById('run-fill').className = 'progress-fill' + (isRest && !isReady ? ' rest' : '');
+  renderRunDynamic();
+}
+
+function renderRunDynamic() {
+  const p = S.phases[S.idx]; if (!p) return;
+  const el = sElapsed();
+  if (p.timed) { const t = document.getElementById('run-time'); if (t) t.textContent = fmtMMSS(Math.ceil(Math.max(0, p.dur - el) / 1000)); }
+  else {
+    const r = document.getElementById('run-reps'); if (r) r.textContent = S.repsVal;
+    const e = document.getElementById('run-elapsed'); if (e) e.textContent = fmtMMSS(Math.floor(el / 1000));
+  }
+  const frac = (S.idx + (p.timed ? Math.min(1, el / p.dur) : 0)) / S.phases.length;
+  document.getElementById('run-fill').style.width = (frac * 100).toFixed(1) + '%';
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || S.status !== 'running') return;
+  acquireWakeLock();
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  let moved = false;
+  while (S.status === 'running') {
+    const p = S.phases[S.idx];
+    if (!p || !p.timed || sElapsed() < p.dur) break;
+    if (!completePhase(sElapsed() - p.dur, false)) return;
+    moved = true;
+  }
+  if (moved) { const p = S.phases[S.idx]; doFlash(p.kind === 'rest' ? '#FF3535' : '#C8FF00'); alarmBeep(); }
+  renderRunStatic();
+});
+
+// ── finishing + log ──
+function summarizeBlocks(s) {
+  return (s.blocks || []).map((b, bi) => {
+    const isCircuit = b.type === 'circuit', isAmrap = b.type === 'amrap';
+    const items = isCircuit ? (b.items || []) : [b];
+    const entries = items.map((it, ii) => {
+      const idxs = S.phases.map((p, i) => (p.kind === 'work' && p.blockIdx === bi && p.itemIdx === ii) ? i : -1).filter(i => i >= 0);
+      const sided = isSided(it), step = sided ? 2 : 1;
+      const acts = [];
+      for (let k = 0; k + step - 1 < idxs.length; k += step) {
+        const a = S.results[idxs[k]]; if (a.actual == null) break;
+        if (sided) { const r2 = S.results[idxs[k + 1]]; acts.push(`L${a.actual} R${r2.actual != null ? r2.actual : '-'}`); }
+        else acts.push(String(a.actual));
+      }
+      const rx = isAmrap ? `${Math.round((b.seconds || 0) / 60)} min AMRAP`
+        : isCircuit ? `${b.rounds} × ${itemRx(it)}`
+        : `${rxText(b)}, rest ${blockRest(b)} s`;
+      return { exercise: exName(it.exercise), rx, load: it.load || '', sided, actual: acts, of: idxs.length / step };
+    });
+    const restIdxs = S.phases.map((p, i) => (p.kind === 'rest' && p.blockIdx === bi) ? i : -1).filter(i => i >= 0);
+    return { amrap: isAmrap, amrapReps: null, restSkipped: restIdxs.filter(i => S.results[i].skipped).length, entries };
+  });
+}
+
+function makeRecord(s, aborted, manual) {
+  const durationSec = manual ? 0 : Math.round((Date.now() - S.startedAt) / 1000);
+  const blocks = manual
+    ? (s.blocks || []).map(b => ({ amrap: b.type === 'amrap', amrapReps: null, restSkipped: 0,
+        entries: (b.type === 'circuit' ? (b.items || []) : [b]).map(it => ({ exercise: exName(it.exercise),
+          rx: b.type === 'amrap' ? `${Math.round((b.seconds || 0) / 60)} min AMRAP` : b.type === 'circuit' ? `${b.rounds} × ${itemRx(it)}` : `${rxText(b)}, rest ${blockRest(b)} s`,
+          load: it.load || '', sided: isSided(it), actual: [], of: 0 })) }))
+    : summarizeBlocks(s);
+  return { sessionId: s.id, name: s.name, day: s.day || '', date: s.date || todayISO(), completedAt: new Date().toISOString(),
+    durationSec, aborted: !!aborted, manual: !!manual, blocks, notes: '' };
+}
+
+function saveRecord(rec) {
+  const log = lsGet(LS.log, []);
+  const i = log.findIndex(r => r.completedAt === rec.completedAt && r.sessionId === rec.sessionId);
+  if (i >= 0) log[i] = rec; else log.push(rec);
+  while (log.length > 200) log.shift();
+  lsSet(LS.log, log);
+  if (!rec.aborted) { const d = lsGet(LS.done, {}); d[rec.sessionId] = rec.completedAt; lsSet(LS.done, d); }
+}
+
+function finishSession(aborted) {
+  clearInterval(S.intervalId); S.intervalId = null;
+  S.status = 'done'; releaseWakeLock();
+  const rec = makeRecord(S.session, aborted, false);
+  saveRecord(rec); S.record = rec;
+  if (!aborted) { doFlash('#C8FF00'); alarmBeep(); }
+  renderSummary(rec); showScreen('summary');
+}
+
+function markDoneManual() {
+  if (!S.session) return;
+  const rec = makeRecord(S.session, false, true);
+  saveRecord(rec); S.record = rec;
+  renderSummary(rec); showScreen('summary');
+}
+
+function actualText(rec, b, e) {
+  if (b.amrap) return b.amrapReps != null ? `${b.amrapReps} reps` : '? reps';
+  if (rec.manual) return 'as prescribed';
+  return e.actual.length ? e.actual.join(e.sided ? ' · ' : '/') : 'not done';
+}
+
+function renderSummary(rec) {
+  document.getElementById('sum-title').textContent = rec.aborted ? 'ENDED' : rec.manual ? 'LOGGED' : 'DONE';
+  document.getElementById('sum-meta').textContent = `${rec.day ? rec.day + ' · ' : ''}${rec.name}${rec.manual ? '' : ' · ' + fmtMMSS(rec.durationSec)}`;
+  const lines = [];
+  rec.blocks.forEach((b, bi) => b.entries.forEach(e => {
+    const act = b.amrap
+      ? `<input type="number" inputmode="numeric" placeholder="reps" value="${b.amrapReps != null ? b.amrapReps : ''}" onchange="setAmrapReps(${bi}, this.value)">`
+      : esc(actualText(rec, b, e));
+    const small = [e.rx, e.load, b.restSkipped ? `${b.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
+    lines.push(`<div class="sum-line"><div class="sum-ex">${esc(e.exercise)}</div><div class="sum-act">${act}<small>${esc(small)}</small></div></div>`);
+  }));
+  document.getElementById('sum-lines').innerHTML = lines.join('');
+  const ta = document.getElementById('sum-notes');
+  ta.value = rec.notes || '';
+  ta.oninput = () => { rec.notes = ta.value; saveRecord(rec); };
+}
+
+function setAmrapReps(bi, v) { if (!S.record) return; const n = parseInt(v, 10); S.record.blocks[bi].amrapReps = isNaN(n) ? null : n; saveRecord(S.record); }
+
+function recordText(rec) {
+  const L = [`${rec.date}${rec.day ? ' ' + rec.day : ''} · ${rec.name} · ${rec.manual ? 'no timer' : fmtMMSS(rec.durationSec)}${rec.aborted ? ' · ended early' : ''}`];
+  rec.blocks.forEach(b => b.entries.forEach(e => {
+    const extras = [e.load, b.restSkipped ? `${b.restSkipped} rest skipped` : ''].filter(Boolean);
+    L.push(`- ${e.exercise}: ${e.rx}${extras.length ? ' (' + extras.join(', ') + ')' : ''} → ${actualText(rec, b, e)}`);
+  }));
+  if (rec.notes) L.push(`Notes: ${rec.notes}`);
+  return L.join('\n');
+}
+
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); toast('COPIED'); return; } catch(e) {}
+  try {
+    const ta = document.createElement('textarea'); ta.value = t;
+    ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta);
+    ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('COPIED');
+  } catch(e) { toast('COPY FAILED'); }
+}
+function copySessionLog() { if (S.record) copyText(recordText(S.record)); }
+function copyWeekLog() {
+  if (!S.plan) return;
+  const ids = new Set((S.plan.sessions || []).map(s => s.id));
+  const recs = lsGet(LS.log, []).filter(r => ids.has(r.sessionId)).sort((a, b) => a.completedAt < b.completedAt ? -1 : 1);
+  if (!recs.length) { toast('NOTHING LOGGED'); return; }
+  copyText(`Strength log · ${S.plan.week || ''}\n\n` + recs.map(recordText).join('\n\n'));
+}
+
+document.addEventListener('DOMContentLoaded', loadPlan);
 
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
