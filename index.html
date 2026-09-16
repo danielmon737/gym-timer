@@ -336,6 +336,11 @@
     .text-btn:active { color: var(--go); }
     .home-foot { display: flex; justify-content: flex-end; align-items: center; }
     .run-ex-name.rest { color: var(--rest); }
+    #blk-list { display: flex; flex-direction: column; gap: 8px; }
+    .sess-title small { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: var(--neutral); text-transform: uppercase; margin-left: 8px; }
+    .blk-lines { font-size: 13px; color: var(--neutral); letter-spacing: 1px; margin-top: 6px; line-height: 1.5; }
+    .sess-card.done .blk-lines { display: none; }
+    #screen-block { justify-content: flex-start; }
 
     /* ── SESSION DETAIL ── */
     #screen-session { justify-content: flex-start; }
@@ -476,11 +481,28 @@
     </div>
   </div>
   <div id="sess-detail"></div>
+  <div class="detail-actions" style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+    <button class="text-btn" id="sum-link-btn" onclick="openSummary()" hidden>Summary · copy log</button>
+    <button class="text-btn" id="mark-done-btn" onclick="markDoneManual()">Did it without the timer · mark done</button>
+    <button class="text-btn" id="clear-log-btn" onclick="clearSessionLog()" hidden>Clear this session's log</button>
+  </div>
+</div>
+
+<!-- ── BLOCK ── -->
+<div class="screen" id="screen-block">
+  <div class="config-top-bar">
+    <button class="back-btn" onclick="openSession(S.sessionIdx)">
+      <span class="back-arrow">‹</span> BACK
+    </button>
+    <div class="config-title-box">
+      <div class="config-title" id="blk-title">BLOCK</div>
+    </div>
+  </div>
+  <div id="blk-detail"></div>
   <div class="detail-actions">
-    <button class="start-btn" onclick="startSession()">START SESSION</button>
-    <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:6px;">
-      <button class="text-btn" onclick="markDoneManual()">Did it without the timer · mark done</button>
-      <button class="text-btn" id="clear-log-btn" onclick="clearSessionLog()" hidden>Clear this session's log</button>
+    <button class="start-btn" onclick="startBlock()">START BLOCK</button>
+    <div style="text-align:center; margin-top:6px;">
+      <button class="text-btn" id="reset-block-btn" onclick="resetBlock()" hidden>Reset this block · nothing logged</button>
     </div>
   </div>
 </div>
@@ -491,7 +513,7 @@
     <div class="phase-badge" id="run-badge" aria-live="assertive" role="status">SET</div>
     <div style="display:flex; align-items:center;">
       <div class="round-display" id="run-progress"></div>
-      <button class="end-btn" onclick="endSessionEarly()">END</button>
+      <button class="end-btn" onclick="endBlockEarly()">END</button>
     </div>
   </div>
   <div class="timer-main">
@@ -519,8 +541,9 @@
     <button class="ctrl-btn" onclick="showScreen('mode'); renderHome();">HOME</button>
     <button class="ctrl-btn primary" onclick="copySessionLog()">COPY LOG</button>
   </div>
-  <div style="text-align:center; flex-shrink:0;">
-    <button class="text-btn" onclick="discardRecord()">Discard this log</button>
+  <div style="display:flex; justify-content:center; gap:14px; flex-shrink:0;">
+    <button class="text-btn" onclick="openSession(S.sessionIdx)">Back to session</button>
+    <button class="text-btn" onclick="discardSessionLog()">Discard this log</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -1068,14 +1091,17 @@ document.addEventListener('visibilitychange', () => {
 
 // ═══════════════════════ WEEKLY SESSIONS ═══════════════════════
 // Sessions come from ./sessions.json (written at the weekly review), exercises from
-// ./exercises.json. The runner below reuses the free timer's audio, flash, wake lock
-// and screen helpers but keeps its own state so the free timer is untouched.
-const LS = { log: 'gt_log_v1', done: 'gt_done_v1', data: 'gt_data_v1' };
+// ./exercises.json. A session is a list of blocks. Blocks run one at a time from the
+// session screen, so the rest between blocks is whatever Daniel wants. Results are kept
+// per block on the phone (localStorage) and composed into a session log for the review.
+// The runner reuses the free timer's audio, flash, wake lock and screen helpers but keeps
+// its own state so the free timer is untouched.
+const LS = { state: 'gt_state_v2', data: 'gt_data_v1' };
 const S = {
-  plan: null, exMap: {}, session: null, record: null,
+  plan: null, exMap: {}, session: null, sessionIdx: -1, blockIdx: -1,
   phases: [], results: [], idx: 0, status: 'idle',
   wallStart: 0, pausedElapsed: 0, intervalId: null, lastRemSec: -1,
-  startedAt: 0, repsVal: 0, sessionIdx: -1,
+  startedAt: 0, repsVal: 0,
 };
 
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } }
@@ -1083,7 +1109,9 @@ function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function todayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function fmtMMSS(sec) { sec = Math.max(0, sec|0); return String(Math.floor(sec/60)).padStart(2,'0') + ':' + String(sec%60).padStart(2,'0'); }
+function fmtSec(sec) { return sec >= 90 ? fmtMMSS(sec) : sec + ' s'; }
 function fmtDate(iso) { const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const p = String(iso).split('-'); return p.length === 3 ? m[+p[1]-1] + ' ' + (+p[2]) : iso; }
+function fmtClock(iso) { const d = new Date(iso); return isNaN(d) ? '' : String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1400); }
 
 // ── plan loading ──
@@ -1104,6 +1132,7 @@ async function loadPlan() {
   renderHome();
 }
 
+// ── prescription helpers ──
 function exName(id) { const x = S.exMap[id]; return x ? x.name : String(id).replace(/_/g, ' '); }
 // Which side(s) an item runs: an explicit "L"/"R" runs one side; a *_side exercise (or side:true) runs both.
 function sidesOf(it) {
@@ -1114,8 +1143,12 @@ function sidesOf(it) {
 function isSided(it) { return sidesOf(it).length === 2; }
 function sideTag(it) { return typeof it.side === 'string' ? (/^l/i.test(it.side) ? ' L' : ' R') : ''; }
 function itemName(it) { return exName(it.exercise) + sideTag(it); }
-function fmtSec(sec) { return sec >= 90 ? fmtMMSS(sec) : sec + ' s'; }
+function isTimed(it) { return it.seconds != null; }
 function isGroup(b) { return b.type === 'circuit' || b.type === 'block' || b.type === 'superset'; }
+function blockRest(b) { return b.rest != null ? b.rest : 60; }
+function itemRx(it) { return (isTimed(it) ? fmtSec(it.seconds) : String(it.reps)) + (isSided(it) ? '/side' : ''); }
+function rxText(b) { return `${b.sets || 1} × ${itemRx(b)}`; }
+function itemWorkSec(it) { return (isTimed(it) ? it.seconds : (it.reps || 0) * 4 + 10) * sidesOf(it).length; }
 function itemLabel(b, ii) { return b.label ? (isGroup(b) ? `${b.label}${ii + 1}` : b.label) : ''; }
 function entryName(b, it, ii) { const l = itemLabel(b, ii); return (l ? l + ' ' : '') + itemName(it); }
 // Rest after an item inside a group: its own rest, else the block rest after the last item of a round.
@@ -1128,25 +1161,38 @@ function entryRx(b, it, ii) {
   if (isGroup(b)) { const r = itemRest(b, it, ii); return `${b.rounds} × ${itemRx(it)}${r ? ', rest ' + r + ' s' : ''}`; }
   return `${rxText(b)}, rest ${blockRest(b)} s`;
 }
-function isTimed(it) { return it.seconds != null; }
-function blockRest(b) { return b.rest != null ? b.rest : 60; }
-function itemRx(it) { return (isTimed(it) ? fmtSec(it.seconds) : String(it.reps)) + (isSided(it) ? '/side' : ''); }
-function rxText(b) { return `${b.sets} × ${itemRx(b)}`; }
-function itemWorkSec(it) { return (isTimed(it) ? it.seconds : (it.reps || 0) * 4 + 10) * sidesOf(it).length; }
-function isDone(s) { return !!(s.done || lsGet(LS.done, {})[s.id]); }
-
-function estimateMin(s) {
-  let sec = 0;
-  (s.blocks || []).forEach(b => {
-    if (b.type === 'amrap') { sec += b.seconds || 0; return; }
-    if (isGroup(b)) {
-      for (let r = 0; r < b.rounds; r++) (b.items || []).forEach((it, ii) => { sec += itemWorkSec(it) + itemRest(b, it, ii); });
-      return;
-    }
-    sec += (b.sets || 1) * (itemWorkSec(b) + blockRest(b));
-  });
-  return Math.max(1, Math.round(sec / 60));
+function blockTitle(b) {
+  if (b.type === 'amrap') return `${exName(b.exercise)} AMRAP`;
+  if (isGroup(b)) return b.label ? `Block ${b.label}` : 'Circuit';
+  return itemName(b);
 }
+function blockSec(b) {
+  if (b.type === 'amrap') return b.seconds || 0;
+  let sec = 0;
+  if (isGroup(b)) { for (let r = 0; r < b.rounds; r++) (b.items || []).forEach((it, ii) => { sec += itemWorkSec(it) + itemRest(b, it, ii); }); }
+  else sec = (b.sets || 1) * (itemWorkSec(b) + blockRest(b));
+  return sec;
+}
+function estimateMin(s) { return Math.max(1, Math.round((s.blocks || []).reduce((a, b) => a + blockSec(b), 0) / 60)); }
+function estimateBlockMin(b) { return Math.max(1, Math.round(blockSec(b) / 60)); }
+function prescribedEntries(b, bi) {
+  return (isGroup(b) ? (b.items || []) : [b]).map((it, ii) => ({ exercise: entryName(b, it, ii), rx: entryRx(b, it, ii), load: it.load || '', sided: isSided(it), actual: [], of: 0 }));
+}
+
+// ── per-session state on this phone ──
+// { [sessionId]: { blocks: { [blockIdx]: result }, notes, manual, doneAt } }
+function allState() { return lsGet(LS.state, {}); }
+function sessState(id) { return allState()[id] || null; }
+function setSessState(id, st) { const a = allState(); if (st) a[id] = st; else delete a[id]; lsSet(LS.state, a); }
+function blockResult(s, bi) { const st = sessState(s.id); return st && st.blocks ? st.blocks[bi] || null : null; }
+function blockDone(s, bi) { const st = sessState(s.id); return !!(st && (st.manual || (st.blocks && st.blocks[bi]))); }
+function sessionDone(s) {
+  if (s.done) return true;
+  const st = sessState(s.id); if (!st) return false;
+  if (st.manual) return true;
+  return (s.blocks || []).every((b, bi) => b.optional || (st.blocks && st.blocks[bi]));
+}
+function isDone(s) { return sessionDone(s); }
 
 // ── home ──
 function renderHome() {
@@ -1168,7 +1214,10 @@ function renderHome() {
   wk.textContent = [S.plan.week, S.plan.updated ? 'updated ' + fmtDate(S.plan.updated) : ''].filter(Boolean).join(' · ');
   list.innerHTML = ss.map((s, i) => {
     const done = isDone(s), isToday = s.date === today;
-    const meta = [ s.date ? fmtDate(s.date) : '', `~${estimateMin(s)} min`, s.location, s.when ].filter(Boolean).join(' · ');
+    const st = sessState(s.id);
+    const nb = (s.blocks || []).length, nd = (s.blocks || []).filter((b, bi) => blockDone(s, bi)).length;
+    const progress = !done && st && nd ? `${nd}/${nb} blocks` : '';
+    const meta = [ s.date ? fmtDate(s.date) : '', `~${estimateMin(s)} min`, progress, s.location, s.when ].filter(Boolean).join(' · ');
     const icon = done ? '✓' : isToday ? '▶' : '›';
     return `<div class="sess-card${done ? ' done' : ''}${isToday && !done ? ' today' : ''}" onclick="openSession(${i})">
       <div class="sess-main">
@@ -1178,77 +1227,112 @@ function renderHome() {
       <div class="sess-icon">${icon}</div>
     </div>`;
   }).join('');
-  const ids = new Set(ss.map(s => s.id));
-  copyBtn.hidden = !lsGet(LS.log, []).some(r => ids.has(r.sessionId));
+  copyBtn.hidden = !ss.some(s => sessState(s.id));
 }
 
-// ── session detail ──
+// ── session screen: one card per block ──
 function openSession(i) {
   const s = S.plan.sessions[i]; if (!s) return;
   S.session = s; S.sessionIdx = i;
   document.getElementById('sess-title').textContent = `${s.day ? s.day + ' · ' : ''}${s.name}`.toUpperCase();
+  const st = sessState(s.id);
   const parts = [];
-  if (isDone(s)) parts.push(`<div class="sess-note muted">Done ✓ — start again to repeat it, or go back.</div>`);
+  if (sessionDone(s)) parts.push(`<div class="sess-note muted">Session done ✓</div>`);
   if (s.note) parts.push(`<div class="sess-note">${esc(s.note)}</div>`);
-  parts.push(`<div class="block-list">${(s.blocks || []).map((b, bi) => blockRowHTML(b, bi)).join('')}</div>`);
-  parts.push(`<div class="sess-est">~${estimateMin(s)} min with rest</div>`);
+  parts.push(`<div id="blk-list">${(s.blocks || []).map((b, bi) => blockCardHTML(s, b, bi)).join('')}</div>`);
+  parts.push(`<div class="sess-est">~${estimateMin(s)} min with rest · tap a block to start it</div>`);
   document.getElementById('sess-detail').innerHTML = parts.join('');
-  document.getElementById('clear-log-btn').hidden = !hasLocalLog(s);
+  document.getElementById('sum-link-btn').hidden = !st;
+  document.getElementById('clear-log-btn').hidden = !st;
+  document.getElementById('mark-done-btn').hidden = !!(st && st.manual);
   showScreen('session');
 }
 
-function blockRowHTML(b, bi) {
+function blockCardHTML(s, b, bi) {
+  const done = blockDone(s, bi);
+  const nextUp = !done && (s.blocks || []).findIndex((x, k) => !blockDone(s, k)) === bi;
+  let lines = [], meta = '';
+  if (b.type === 'amrap') meta = `${Math.round((b.seconds || 0) / 60)} min · max reps`;
+  else if (isGroup(b)) {
+    meta = `${b.rounds} rounds`;
+    lines = (b.items || []).map((it, ii) => { const r = itemRest(b, it, ii); return `${itemLabel(b, ii)} ${itemName(it)} · ${itemRx(it)}${it.load ? ' @ ' + it.load : ''}${r ? ' · rest ' + r : ''}`; });
+  } else meta = `${rxText(b)} · rest ${blockRest(b)}${b.load ? ' · ' + b.load : ''}${b.note ? ' · ' + b.note : ''}`;
+  const icon = done ? '✓' : nextUp ? '▶' : '›';
+  return `<div class="sess-card${done ? ' done' : ''}${nextUp ? ' today' : ''}" onclick="openBlock(${bi})">
+    <div class="sess-main">
+      <div class="sess-title">${esc(blockTitle(b))}${b.optional ? '<small>optional</small>' : ''}</div>
+      ${meta ? `<div class="sess-meta">${esc(meta)}</div>` : ''}
+      ${lines.length ? `<div class="blk-lines">${lines.map(l => `<div>${esc(l)}</div>`).join('')}</div>` : ''}
+    </div>
+    <div class="sess-icon">${icon}</div>
+  </div>`;
+}
+
+// ── block screen ──
+function openBlock(bi) {
+  const s = S.session, b = s && s.blocks[bi]; if (!b) return;
+  S.blockIdx = bi;
+  document.getElementById('blk-title').textContent = blockTitle(b).toUpperCase();
+  const st = sessState(s.id), res = blockResult(s, bi);
+  const parts = [];
+  if (res) parts.push(`<div class="sess-note muted">Done ✓ at ${fmtClock(res.completedAt)} — start again to redo it, or reset it below.</div>`);
+  else if (st && st.manual) parts.push(`<div class="sess-note muted">Logged as done without the timer.</div>`);
+  if (b.note) parts.push(`<div class="sess-note">${esc(b.note)}</div>`);
+  parts.push(`<div class="block-list">${blockRowsHTML(b)}</div>`);
+  parts.push(`<div class="sess-est">~${estimateBlockMin(b)} min with rest</div>`);
+  document.getElementById('blk-detail').innerHTML = parts.join('');
+  document.getElementById('reset-block-btn').hidden = !res;
+  showScreen('block');
+}
+
+function blockRowsHTML(b) {
   const lbl = l => l ? `<small class="lbl">${esc(l)}</small>` : '';
   if (b.type === 'amrap') {
     return `<div class="block-row"><div class="block-name">${lbl(b.label)}${esc(exName(b.exercise))} <small>AMRAP</small></div><div class="block-rx">${Math.round((b.seconds || 0) / 60)} min<small>max reps · count them</small></div></div>`;
   }
   if (isGroup(b)) {
-    const head = `<div class="block-head">${esc(b.label ? 'Block ' + b.label : 'Circuit')}<span>${b.rounds} rounds</span></div>`;
+    const head = `<div class="block-head">Rounds<span>${b.rounds}</span></div>`;
     const rows = (b.items || []).map((it, ii) => {
       const r = itemRest(b, it, ii);
       const sub = [r ? `rest ${r} s` : 'no rest', it.load, it.note].filter(Boolean).join(' · ');
       return `<div class="block-row"><div class="block-name">${lbl(itemLabel(b, ii))}${esc(itemName(it))}</div><div class="block-rx">${esc(itemRx(it))}<small>${esc(sub)}</small></div></div>`;
     }).join('');
-    return `<div class="block-group">${head}${rows}</div>`;
+    return head + rows;
   }
   const sub = [`rest ${blockRest(b)} s`, b.load, b.note].filter(Boolean).join(' · ');
-  return `<div class="block-row${b.optional ? ' optional' : ''}"><div class="block-name">${lbl(b.label)}${esc(itemName(b))}${b.optional ? ' <small>optional</small>' : ''}</div><div class="block-rx">${esc(rxText(b))}<small>${esc(sub)}</small></div></div>`;
+  return `<div class="block-row"><div class="block-name">${lbl(b.label)}${esc(itemName(b))}</div><div class="block-rx">${esc(rxText(b))}<small>${esc(sub)}</small></div></div>`;
 }
 
-// ── phase expansion ──
-function buildSessionPhases(s) {
+// ── phase expansion for one block ──
+function buildBlockPhases(b, bi) {
   const P = [];
-  const work = (it, b, bi, ii, setIdx, setsTotal, roundLabel) => {
-    const timed = isTimed(it), sides = sidesOf(it), x = S.exMap[it.exercise] || {};
-    sides.forEach(side => P.push({
+  const work = (it, ii, setIdx, setsTotal, roundLabel) => {
+    const timed = isTimed(it), x = S.exMap[it.exercise] || {};
+    sidesOf(it).forEach(side => P.push({
       kind: 'work', timed, dur: timed ? it.seconds * 1000 : null,
       ex: exName(it.exercise), side, badge: x.badge || '',
       target: timed ? it.seconds : (it.reps || 0), load: it.load || '', note: it.note || '',
       blockIdx: bi, itemIdx: ii, setIdx, setsTotal, roundLabel: roundLabel || '', label: itemLabel(b, ii),
     }));
   };
-  (s.blocks || []).forEach((b, bi) => {
-    if (b.type === 'amrap') {
-      P.push({ kind: 'work', timed: true, dur: (b.seconds || 0) * 1000, ex: exName(b.exercise), side: null, badge: '',
-        target: b.seconds || 0, load: b.load || '', note: 'max reps · count them',
-        blockIdx: bi, itemIdx: 0, setIdx: 0, setsTotal: 1, roundLabel: '', label: b.label || '', amrap: true });
-      return;
+  if (b.type === 'amrap') {
+    P.push({ kind: 'work', timed: true, dur: (b.seconds || 0) * 1000, ex: exName(b.exercise), side: null, badge: '',
+      target: b.seconds || 0, load: b.load || '', note: 'max reps · count them',
+      blockIdx: bi, itemIdx: 0, setIdx: 0, setsTotal: 1, roundLabel: '', label: b.label || '', amrap: true });
+  } else if (isGroup(b)) {
+    for (let r = 0; r < b.rounds; r++) {
+      (b.items || []).forEach((it, ii) => {
+        work(it, ii, r, b.rounds, `Round ${r + 1} of ${b.rounds}`);
+        const rest = itemRest(b, it, ii);
+        if (rest > 0) P.push({ kind: 'rest', timed: true, dur: rest * 1000, blockIdx: bi });
+      });
     }
-    if (isGroup(b)) {
-      for (let r = 0; r < b.rounds; r++) {
-        (b.items || []).forEach((it, ii) => {
-          work(it, b, bi, ii, r, b.rounds, `Round ${r + 1} of ${b.rounds}`);
-          const rest = itemRest(b, it, ii);
-          if (rest > 0) P.push({ kind: 'rest', timed: true, dur: rest * 1000, blockIdx: bi });
-        });
-      }
-      return;
-    }
+  } else {
     for (let k = 0; k < (b.sets || 1); k++) {
-      work(b, b, bi, 0, k, b.sets || 1, '');
+      work(b, 0, k, b.sets || 1, '');
       if (blockRest(b) > 0) P.push({ kind: 'rest', timed: true, dur: blockRest(b) * 1000, blockIdx: bi });
     }
-  });
+  }
   while (P.length && P[P.length - 1].kind === 'rest') P.pop();
   if (P.length && P[0].timed) P.unshift({ kind: 'rest', ready: true, timed: true, dur: 5000, blockIdx: -1 });
   return P;
@@ -1257,9 +1341,9 @@ function buildSessionPhases(s) {
 // ── runner ──
 function sElapsed() { return S.status === 'running' ? S.pausedElapsed + (Date.now() - S.wallStart) : S.pausedElapsed; }
 
-function startSession() {
-  const s = S.session; if (!s) return;
-  S.phases = buildSessionPhases(s);
+function startBlock() {
+  const s = S.session, b = s && s.blocks[S.blockIdx]; if (!b) return;
+  S.phases = buildBlockPhases(b, S.blockIdx);
   if (!S.phases.length) return;
   S.results = S.phases.map(() => ({}));
   S.status = 'running'; S.startedAt = Date.now();
@@ -1293,7 +1377,7 @@ function runTick() {
   }, 50);
 }
 
-// Records the current phase's result and moves on. Returns false when the session ended.
+// Records the current phase's result and moves on. Returns false when the block ended.
 function completePhase(overshoot, cue) {
   const p = S.phases[S.idx]; const el = sElapsed(); const r = S.results[S.idx];
   if (p.kind === 'work') {
@@ -1301,7 +1385,7 @@ function completePhase(overshoot, cue) {
     else { r.actual = S.repsVal; r.sec = Math.round(el / 1000); }
   } else { r.skipped = el < p.dur - 500; r.dur = Math.round(el / 1000); }
   const next = S.idx + 1;
-  if (next >= S.phases.length) { finishSession(false); return false; }
+  if (next >= S.phases.length) { finishBlock(false); return false; }
   enterPhase(next, overshoot || 0, cue);
   renderRunStatic();
   return true;
@@ -1319,10 +1403,12 @@ function toggleRunPause() {
   renderRunStatic();
 }
 
-function endSessionEarly() {
+// END during a block: nothing from the attempt is logged. Confirms only if a set was already recorded.
+function endBlockEarly() {
   if (S.status === 'done') return;
-  if (!confirm('End the session now? What you did so far gets logged.')) return;
-  finishSession(true);
+  const anyWork = S.results.some(r => r.actual != null);
+  if (anyWork && !confirm('End this block? Nothing from it gets logged.')) return;
+  finishBlock(true);
 }
 
 function renderRunStatic() {
@@ -1391,125 +1477,127 @@ document.addEventListener('visibilitychange', () => {
   renderRunStatic();
 });
 
-// ── finishing + log ──
-function summarizeBlocks(s) {
-  return (s.blocks || []).map((b, bi) => {
-    const isAmrap = b.type === 'amrap';
-    const items = isGroup(b) ? (b.items || []) : [b];
-    const entries = items.map((it, ii) => {
-      const idxs = S.phases.map((p, i) => (p.kind === 'work' && p.blockIdx === bi && p.itemIdx === ii) ? i : -1).filter(i => i >= 0);
-      const both = isSided(it), step = both ? 2 : 1, timed = isTimed(it);
-      const fa = v => (timed && v >= 90) ? fmtMMSS(v) : String(v);
-      const acts = [];
-      for (let k = 0; k + step - 1 < idxs.length; k += step) {
-        const a = S.results[idxs[k]]; if (a.actual == null) break;
-        if (both) { const r2 = S.results[idxs[k + 1]]; acts.push(`L${fa(a.actual)} R${r2.actual != null ? fa(r2.actual) : '-'}`); }
-        else acts.push(fa(a.actual));
-      }
-      return { exercise: entryName(b, it, ii), rx: entryRx(b, it, ii), load: it.load || '', sided: both, actual: acts, of: idxs.length / step };
-    });
-    const restIdxs = S.phases.map((p, i) => (p.kind === 'rest' && p.blockIdx === bi) ? i : -1).filter(i => i >= 0);
-    return { amrap: isAmrap, amrapReps: null, restSkipped: restIdxs.filter(i => S.results[i].skipped).length, entries };
+// ── finishing a block ──
+function summarizeBlock(b, bi) {
+  const items = isGroup(b) ? (b.items || []) : [b];
+  const entries = items.map((it, ii) => {
+    const idxs = S.phases.map((p, i) => (p.kind === 'work' && p.blockIdx === bi && p.itemIdx === ii) ? i : -1).filter(i => i >= 0);
+    const both = isSided(it), step = both ? 2 : 1, timed = isTimed(it);
+    const fa = v => (timed && v >= 90) ? fmtMMSS(v) : String(v);
+    const acts = [];
+    for (let k = 0; k + step - 1 < idxs.length; k += step) {
+      const a = S.results[idxs[k]]; if (a.actual == null) break;
+      if (both) { const r2 = S.results[idxs[k + 1]]; acts.push(`L${fa(a.actual)} R${r2.actual != null ? fa(r2.actual) : '-'}`); }
+      else acts.push(fa(a.actual));
+    }
+    return { exercise: entryName(b, it, ii), rx: entryRx(b, it, ii), load: it.load || '', sided: both, actual: acts, of: idxs.length / step };
   });
+  const restIdxs = S.phases.map((p, i) => (p.kind === 'rest' && p.blockIdx === bi) ? i : -1).filter(i => i >= 0);
+  return { entries, restSkipped: restIdxs.filter(i => S.results[i].skipped).length, amrapReps: null };
 }
 
-function makeRecord(s, aborted, manual) {
-  const durationSec = manual ? 0 : Math.round((Date.now() - S.startedAt) / 1000);
-  const blocks = manual
-    ? (s.blocks || []).map(b => ({ amrap: b.type === 'amrap', amrapReps: null, restSkipped: 0,
-        entries: (isGroup(b) ? (b.items || []) : [b]).map((it, ii) => ({ exercise: entryName(b, it, ii), rx: entryRx(b, it, ii),
-          load: it.load || '', sided: isSided(it), actual: [], of: 0 })) }))
-    : summarizeBlocks(s);
-  return { sessionId: s.id, name: s.name, day: s.day || '', date: s.date || todayISO(), completedAt: new Date().toISOString(),
-    durationSec, aborted: !!aborted, manual: !!manual, blocks, notes: '' };
-}
-
-function saveRecord(rec) {
-  const log = lsGet(LS.log, []);
-  const i = log.findIndex(r => r.completedAt === rec.completedAt && r.sessionId === rec.sessionId);
-  if (i >= 0) log[i] = rec; else log.push(rec);
-  while (log.length > 200) log.shift();
-  lsSet(LS.log, log);
-  if (!rec.aborted) { const d = lsGet(LS.done, {}); d[rec.sessionId] = rec.completedAt; lsSet(LS.done, d); }
-}
-
-function finishSession(aborted) {
+function finishBlock(aborted) {
   clearInterval(S.intervalId); S.intervalId = null;
   S.status = 'done'; releaseWakeLock();
-  const rec = makeRecord(S.session, aborted, false);
-  if (aborted && !recordHasWork(rec)) { toast('NOTHING LOGGED'); showScreen('mode'); renderHome(); return; }
-  saveRecord(rec); S.record = rec;
-  if (!aborted) { doFlash('#C8FF00'); alarmBeep(); }
-  renderSummary(rec); showScreen('summary');
+  const s = S.session, bi = S.blockIdx, b = s.blocks[bi];
+  if (aborted) { toast('NOTHING LOGGED'); openSession(S.sessionIdx); return; }
+  const res = summarizeBlock(b, bi);
+  res.completedAt = new Date().toISOString();
+  res.durationSec = Math.round((Date.now() - S.startedAt) / 1000);
+  const st = sessState(s.id) || { blocks: {}, notes: '' };
+  st.blocks = st.blocks || {}; st.blocks[bi] = res;
+  if (sessionDone(s) || (s.blocks || []).every((x, k) => x.optional || st.blocks[k])) st.doneAt = st.doneAt || res.completedAt;
+  setSessState(s.id, st);
+  doFlash('#C8FF00'); alarmBeep();
+  if (sessionDone(s)) { toast('SESSION DONE'); openSummary(); }
+  else { toast('BLOCK DONE'); openSession(S.sessionIdx); }
 }
 
-function recordHasWork(rec) {
-  return rec.manual || rec.blocks.some(b => b.amrapReps != null || b.entries.some(e => e.actual.length > 0));
-}
-function hasLocalLog(s) {
-  return lsGet(LS.log, []).some(r => r.sessionId === s.id) || !!lsGet(LS.done, {})[s.id];
-}
-
-// Drop the record currently shown on the summary (and its done mark, if it set one).
-function discardRecord() {
-  const rec = S.record; if (!rec) return;
-  if (!confirm('Discard this log?')) return;
-  lsSet(LS.log, lsGet(LS.log, []).filter(r => !(r.sessionId === rec.sessionId && r.completedAt === rec.completedAt)));
-  const d = lsGet(LS.done, {});
-  if (d[rec.sessionId] === rec.completedAt) { delete d[rec.sessionId]; lsSet(LS.done, d); }
-  S.record = null; toast('DISCARDED');
-  showScreen('mode'); renderHome();
-}
-
-// Wipe everything this phone has logged for the open session.
-function clearSessionLog() {
-  const s = S.session; if (!s) return;
-  if (!confirm('Clear everything logged for this session on this phone?')) return;
-  lsSet(LS.log, lsGet(LS.log, []).filter(r => r.sessionId !== s.id));
-  const d = lsGet(LS.done, {}); delete d[s.id]; lsSet(LS.done, d);
-  toast('CLEARED'); openSession(S.sessionIdx);
+function resetBlock() {
+  const s = S.session, bi = S.blockIdx; if (!s) return;
+  if (!confirm('Reset this block? Its log on this phone is removed.')) return;
+  const st = sessState(s.id); if (!st) return;
+  if (st.blocks) delete st.blocks[bi];
+  delete st.doneAt;
+  setSessState(s.id, (st.manual || (st.blocks && Object.keys(st.blocks).length) || st.notes) ? st : null);
+  toast('RESET'); openBlock(bi);
 }
 
 function markDoneManual() {
-  if (!S.session) return;
-  const rec = makeRecord(S.session, false, true);
-  saveRecord(rec); S.record = rec;
-  renderSummary(rec); showScreen('summary');
+  const s = S.session; if (!s) return;
+  const st = sessState(s.id) || { blocks: {}, notes: '' };
+  st.manual = true; st.doneAt = st.doneAt || new Date().toISOString();
+  setSessState(s.id, st);
+  toast('LOGGED'); openSummary();
 }
 
-function actualText(rec, b, e) {
-  if (b.amrap) return b.amrapReps != null ? `${b.amrapReps} reps` : '? reps';
-  if (rec.manual) return 'as prescribed';
+function clearSessionLog() {
+  const s = S.session; if (!s) return;
+  if (!confirm('Clear everything logged for this session on this phone?')) return;
+  setSessState(s.id, null);
+  toast('CLEARED'); openSession(S.sessionIdx);
+}
+
+// ── summary + log text ──
+function openSummary() {
+  const s = S.session, st = s && sessState(s.id); if (!st) return;
+  const done = sessionDone(s);
+  const nb = (s.blocks || []).length, nd = (s.blocks || []).filter((b, bi) => blockDone(s, bi)).length;
+  const total = Object.values(st.blocks || {}).reduce((a, r) => a + (r.durationSec || 0), 0);
+  document.getElementById('sum-title').textContent = st.manual ? 'LOGGED' : done ? 'DONE' : 'IN PROGRESS';
+  document.getElementById('sum-meta').textContent = `${s.day ? s.day + ' · ' : ''}${s.name} · ${nd}/${nb} blocks${total ? ' · ' + fmtMMSS(total) : ''}`;
+  const lines = [];
+  (s.blocks || []).forEach((b, bi) => {
+    const res = st.blocks && st.blocks[bi];
+    const entries = res ? res.entries : prescribedEntries(b, bi);
+    entries.forEach((e, ei) => {
+      let act;
+      if (b.type === 'amrap' && res) act = `<input type="number" inputmode="numeric" placeholder="reps" value="${res.amrapReps != null ? res.amrapReps : ''}" onchange="setAmrapReps(${bi}, this.value)">`;
+      else act = esc(entryActual(st, b, res, e));
+      const small = [e.rx, e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
+      lines.push(`<div class="sum-line"><div class="sum-ex">${esc(e.exercise)}</div><div class="sum-act">${act}<small>${esc(small)}</small></div></div>`);
+    });
+  });
+  document.getElementById('sum-lines').innerHTML = lines.join('');
+  const ta = document.getElementById('sum-notes');
+  ta.value = st.notes || '';
+  ta.oninput = () => { const cur = sessState(s.id); if (cur) { cur.notes = ta.value; setSessState(s.id, cur); } };
+  showScreen('summary');
+}
+
+function entryActual(st, b, res, e) {
+  if (b.type === 'amrap') return res ? (res.amrapReps != null ? `${res.amrapReps} reps` : '? reps') : (st.manual ? 'as prescribed' : 'not done');
+  if (!res) return st.manual ? 'as prescribed' : 'not done';
   return e.actual.length ? e.actual.join(e.sided ? ' · ' : '/') : 'not done';
 }
 
-function renderSummary(rec) {
-  document.getElementById('sum-title').textContent = rec.aborted ? 'ENDED' : rec.manual ? 'LOGGED' : 'DONE';
-  document.getElementById('sum-meta').textContent = `${rec.day ? rec.day + ' · ' : ''}${rec.name}${rec.manual ? '' : ' · ' + fmtMMSS(rec.durationSec)}`;
-  const lines = [];
-  rec.blocks.forEach((b, bi) => b.entries.forEach((e, ei) => {
-    const act = b.amrap
-      ? `<input type="number" inputmode="numeric" placeholder="reps" value="${b.amrapReps != null ? b.amrapReps : ''}" onchange="setAmrapReps(${bi}, this.value)">`
-      : esc(actualText(rec, b, e));
-    const small = [e.rx, e.load, b.restSkipped && ei === 0 ? `${b.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
-    lines.push(`<div class="sum-line"><div class="sum-ex">${esc(e.exercise)}</div><div class="sum-act">${act}<small>${esc(small)}</small></div></div>`);
-  }));
-  document.getElementById('sum-lines').innerHTML = lines.join('');
-  const ta = document.getElementById('sum-notes');
-  ta.value = rec.notes || '';
-  ta.oninput = () => { rec.notes = ta.value; saveRecord(rec); };
+function setAmrapReps(bi, v) {
+  const s = S.session, st = s && sessState(s.id); if (!st || !st.blocks || !st.blocks[bi]) return;
+  const n = parseInt(v, 10); st.blocks[bi].amrapReps = isNaN(n) ? null : n; setSessState(s.id, st);
 }
 
-function setAmrapReps(bi, v) { if (!S.record) return; const n = parseInt(v, 10); S.record.blocks[bi].amrapReps = isNaN(n) ? null : n; saveRecord(S.record); }
-
-function recordText(rec) {
-  const L = [`${rec.date}${rec.day ? ' ' + rec.day : ''} · ${rec.name} · ${rec.manual ? 'no timer' : fmtMMSS(rec.durationSec)}${rec.aborted ? ' · ended early' : ''}`];
-  rec.blocks.forEach(b => b.entries.forEach((e, ei) => {
-    const extras = [e.load, b.restSkipped && ei === 0 ? `${b.restSkipped} rest skipped` : ''].filter(Boolean);
-    L.push(`- ${e.exercise}: ${e.rx}${extras.length ? ' (' + extras.join(', ') + ')' : ''} → ${actualText(rec, b, e)}`);
-  }));
-  if (rec.notes) L.push(`Notes: ${rec.notes}`);
+function sessionText(s) {
+  const st = sessState(s.id); if (!st) return '';
+  const nb = (s.blocks || []).length, nd = (s.blocks || []).filter((b, bi) => blockDone(s, bi)).length;
+  const total = Object.values(st.blocks || {}).reduce((a, r) => a + (r.durationSec || 0), 0);
+  const L = [`${s.date || ''}${s.day ? ' ' + s.day : ''} · ${s.name} · ${nd}/${nb} blocks${st.manual ? ' · no timer' : total ? ' · ' + fmtMMSS(total) : ''}`];
+  (s.blocks || []).forEach((b, bi) => {
+    const res = st.blocks && st.blocks[bi];
+    const entries = res ? res.entries : prescribedEntries(b, bi);
+    entries.forEach((e, ei) => {
+      const extras = [e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : ''].filter(Boolean);
+      L.push(`- ${e.exercise}: ${e.rx}${extras.length ? ' (' + extras.join(', ') + ')' : ''} → ${entryActual(st, b, res, e)}`);
+    });
+  });
+  if (st.notes) L.push(`Notes: ${st.notes}`);
   return L.join('\n');
+}
+
+function discardSessionLog() {
+  const s = S.session; if (!s || !sessState(s.id)) return;
+  if (!confirm('Discard this session\'s log on this phone?')) return;
+  setSessState(s.id, null);
+  toast('DISCARDED'); showScreen('mode'); renderHome();
 }
 
 async function copyText(t) {
@@ -1520,13 +1608,12 @@ async function copyText(t) {
     ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('COPIED');
   } catch(e) { toast('COPY FAILED'); }
 }
-function copySessionLog() { if (S.record) copyText(recordText(S.record)); }
+function copySessionLog() { if (S.session && sessState(S.session.id)) copyText(sessionText(S.session)); }
 function copyWeekLog() {
   if (!S.plan) return;
-  const ids = new Set((S.plan.sessions || []).map(s => s.id));
-  const recs = lsGet(LS.log, []).filter(r => ids.has(r.sessionId)).sort((a, b) => a.completedAt < b.completedAt ? -1 : 1);
-  if (!recs.length) { toast('NOTHING LOGGED'); return; }
-  copyText(`Strength log · ${S.plan.week || ''}\n\n` + recs.map(recordText).join('\n\n'));
+  const texts = (S.plan.sessions || []).filter(s => sessState(s.id)).map(sessionText);
+  if (!texts.length) { toast('NOTHING LOGGED'); return; }
+  copyText(`Strength log · ${S.plan.week || ''}\n\n` + texts.join('\n\n'));
 }
 
 document.addEventListener('DOMContentLoaded', loadPlan);

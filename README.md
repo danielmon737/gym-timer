@@ -5,19 +5,21 @@ week's strength sessions.
 
 ## Weekly sessions
 
-The home screen lists this week's strength sessions from `sessions.json` and runs each one
-as guided phases: untimed sets with a Done button and a rep stepper, timed holds, and
-enforced rest between sets (skip or +30 s). Exercise names and types come from
-`exercises.json`.
+The home screen lists this week's strength sessions from `sessions.json`. A session is a
+list of blocks (warm-up, Block A, Block B, …). Each block is started on its own from the
+session screen and runs as guided phases: untimed sets with a Done button and a rep
+stepper, timed holds, and enforced rest between sets (skip or +30 s). Rest between blocks
+is up to you. A finished block gets a check; the session is done when every non-optional
+block is. Exercise names and types come from `exercises.json`.
 
 - `sessions.json` is rewritten each week by the coaching review and pushed. The app fetches
   it network-first, so a new week shows up on the next open without a cache bump. Offline,
   the last downloaded copy is used.
 - Done state and session logs stay in the phone's localStorage. "Copy log" and "Copy week
   log" put a plain-text summary on the clipboard to paste into the weekly review.
-- Mistakes are cheap: ending a session before any set is recorded saves nothing, the summary
-  has "Discard this log", and the session screen shows "Clear this session's log" once
-  anything is logged for it on that phone.
+- Mistakes are cheap: ending a block before any set is recorded saves nothing (after that it
+  asks first, and still logs nothing), a finished block can be reset from its own screen, the
+  summary has "Discard this log", and the session screen shows "Clear this session's log".
 - Block shapes: `{exercise, sets, reps|seconds, rest, load?, note?, optional?, label?}` for
   straight sets; `{type:"block", label:"A", rounds, items:[{exercise, reps|seconds, rest,
   load?, note?, side?}], rest?}` for supersets and circuits (items run A1, A2, … each round,
