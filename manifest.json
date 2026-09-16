@@ -1,7 +1,7 @@
 {
   "name": "Gym Timer",
   "short_name": "GymTimer",
-  "description": "HIIT, Tabata, AMRAP & Countdown timer for workouts",
+  "description": "Workout timers plus this week's strength sessions, block by block",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",

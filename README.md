@@ -27,6 +27,37 @@ block is. Exercise names and types come from `exercises.json`.
   `{type:"amrap", exercise, seconds}`. The exercise `type` decides untimed vs timed and
   per-side: `reps`, `reps_side`, `time`, `time_side`. An item `side: "R"` or `"L"` runs one
   side only. An exercise `badge` (e.g. `WARM-UP`) replaces the SET/HOLD label in the runner.
+- Session fields: `id` (`YYYY-MM-DD-slug`, stable within the week), `date`, `day`, `name`,
+  `note`, optional `when`, `location`, and `done: true` for a session already logged elsewhere.
+  A block with `optional: true` doesn't count toward "session done".
+
+### Example week
+
+```json
+{
+  "week": "2026-W38",
+  "updated": "2026-09-16",
+  "sessions": [
+    {
+      "id": "2026-09-16-core", "date": "2026-09-16", "day": "Wed", "name": "Core + plyo",
+      "note": "Rested sets, not a circuit.",
+      "blocks": [
+        { "exercise": "z2_warmup", "sets": 1, "seconds": 600, "rest": 60, "note": "bike, row or jump rope" },
+        { "type": "block", "label": "A", "rounds": 3, "items": [
+          { "exercise": "plank", "seconds": 45, "rest": 60 },
+          { "exercise": "side_plank", "side": "R", "seconds": 30, "rest": 45 },
+          { "exercise": "side_plank", "side": "L", "seconds": 30, "rest": 45 } ] },
+        { "type": "block", "label": "B", "rounds": 3, "items": [
+          { "exercise": "ab_roller", "reps": 8, "rest": 90, "note": "from knees" },
+          { "exercise": "box_jump", "reps": 8, "rest": 90, "note": "step down" } ] },
+        { "type": "block", "label": "C", "rounds": 4, "items": [
+          { "exercise": "pullup", "reps": 5, "rest": 0 },
+          { "exercise": "pushup", "reps": 10, "rest": 90 } ] }
+      ]
+    }
+  ]
+}
+```
 
 ## How to deploy (free, 5 minutes)
 
