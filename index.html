@@ -346,6 +346,10 @@
     .block-row.optional { border-style: dashed; }
     .block-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--text); }
     .block-name small { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: var(--neutral); margin-left: 6px; text-transform: uppercase; }
+    .block-name small.lbl { margin: 0 8px 0 0; color: var(--go); font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1px; }
+    .block-group { display: flex; flex-direction: column; gap: 6px; }
+    .block-head { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--neutral); padding: 8px 4px 0; }
+    .block-head span { letter-spacing: 1.5px; }
     .block-rx { font-size: 16px; color: var(--go); letter-spacing: 1px; text-align: right; flex-shrink: 0; max-width: 60%; }
     .block-rx small { display: block; font-size: 11px; color: var(--neutral); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
     .sess-est { text-align: center; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--neutral); margin-top: 12px; }
@@ -1101,23 +1105,42 @@ async function loadPlan() {
 }
 
 function exName(id) { const x = S.exMap[id]; return x ? x.name : String(id).replace(/_/g, ' '); }
-function isSided(it) { const x = S.exMap[it.exercise]; return !!(it.side || (x && /_side$/.test(x.type || ''))); }
+// Which side(s) an item runs: an explicit "L"/"R" runs one side; a *_side exercise (or side:true) runs both.
+function sidesOf(it) {
+  if (typeof it.side === 'string') return [/^l/i.test(it.side) ? 'LEFT' : 'RIGHT'];
+  const x = S.exMap[it.exercise];
+  return (it.side === true || (x && /_side$/.test(x.type || ''))) ? ['LEFT', 'RIGHT'] : [null];
+}
+function isSided(it) { return sidesOf(it).length === 2; }
+function sideTag(it) { return typeof it.side === 'string' ? (/^l/i.test(it.side) ? ' L' : ' R') : ''; }
+function itemName(it) { return exName(it.exercise) + sideTag(it); }
+function fmtSec(sec) { return sec >= 90 ? fmtMMSS(sec) : sec + ' s'; }
+function isGroup(b) { return b.type === 'circuit' || b.type === 'block' || b.type === 'superset'; }
+function itemLabel(b, ii) { return b.label ? (isGroup(b) ? `${b.label}${ii + 1}` : b.label) : ''; }
+function entryName(b, it, ii) { const l = itemLabel(b, ii); return (l ? l + ' ' : '') + itemName(it); }
+// Rest after an item inside a group: its own rest, else the block rest after the last item of a round.
+function itemRest(b, it, ii) {
+  if (it.rest != null) return it.rest;
+  return ii === (b.items || []).length - 1 ? (b.rest || 0) : 0;
+}
+function entryRx(b, it, ii) {
+  if (b.type === 'amrap') return `${Math.round((b.seconds || 0) / 60)} min AMRAP`;
+  if (isGroup(b)) { const r = itemRest(b, it, ii); return `${b.rounds} × ${itemRx(it)}${r ? ', rest ' + r + ' s' : ''}`; }
+  return `${rxText(b)}, rest ${blockRest(b)} s`;
+}
 function isTimed(it) { return it.seconds != null; }
 function blockRest(b) { return b.rest != null ? b.rest : 60; }
-function itemRx(it) { return (isTimed(it) ? it.seconds + ' s' : String(it.reps)) + (isSided(it) ? '/side' : ''); }
+function itemRx(it) { return (isTimed(it) ? fmtSec(it.seconds) : String(it.reps)) + (isSided(it) ? '/side' : ''); }
 function rxText(b) { return `${b.sets} × ${itemRx(b)}`; }
-function itemWorkSec(it) { return (isTimed(it) ? it.seconds : (it.reps || 0) * 4 + 10) * (isSided(it) ? 2 : 1); }
+function itemWorkSec(it) { return (isTimed(it) ? it.seconds : (it.reps || 0) * 4 + 10) * sidesOf(it).length; }
 function isDone(s) { return !!(s.done || lsGet(LS.done, {})[s.id]); }
 
 function estimateMin(s) {
   let sec = 0;
   (s.blocks || []).forEach(b => {
     if (b.type === 'amrap') { sec += b.seconds || 0; return; }
-    if (b.type === 'circuit') {
-      for (let r = 0; r < b.rounds; r++) {
-        (b.items || []).forEach(it => { sec += itemWorkSec(it); });
-        if (r < b.rounds - 1) sec += blockRest(b);
-      }
+    if (isGroup(b)) {
+      for (let r = 0; r < b.rounds; r++) (b.items || []).forEach((it, ii) => { sec += itemWorkSec(it) + itemRest(b, it, ii); });
       return;
     }
     sec += (b.sets || 1) * (itemWorkSec(b) + blockRest(b));
@@ -1167,53 +1190,62 @@ function openSession(i) {
   const parts = [];
   if (isDone(s)) parts.push(`<div class="sess-note muted">Done ✓ — start again to repeat it, or go back.</div>`);
   if (s.note) parts.push(`<div class="sess-note">${esc(s.note)}</div>`);
-  parts.push(`<div class="block-list">${(s.blocks || []).map(blockRowHTML).join('')}</div>`);
+  parts.push(`<div class="block-list">${(s.blocks || []).map((b, bi) => blockRowHTML(b, bi)).join('')}</div>`);
   parts.push(`<div class="sess-est">~${estimateMin(s)} min with rest</div>`);
   document.getElementById('sess-detail').innerHTML = parts.join('');
   document.getElementById('clear-log-btn').hidden = !hasLocalLog(s);
   showScreen('session');
 }
 
-function blockRowHTML(b) {
-  if (b.type === 'circuit') {
-    const items = (b.items || []).map(it => `${exName(it.exercise)} ${itemRx(it)}${it.load ? ' @ ' + it.load : ''}`).join(' · ');
-    return `<div class="block-row"><div class="block-name">Circuit <small>${b.rounds} rounds</small></div><div class="block-rx">${esc(items)}<small>rest ${blockRest(b)} s between rounds</small></div></div>`;
-  }
+function blockRowHTML(b, bi) {
+  const lbl = l => l ? `<small class="lbl">${esc(l)}</small>` : '';
   if (b.type === 'amrap') {
-    return `<div class="block-row"><div class="block-name">${esc(exName(b.exercise))} <small>AMRAP</small></div><div class="block-rx">${Math.round((b.seconds || 0) / 60)} min<small>max reps · count them</small></div></div>`;
+    return `<div class="block-row"><div class="block-name">${lbl(b.label)}${esc(exName(b.exercise))} <small>AMRAP</small></div><div class="block-rx">${Math.round((b.seconds || 0) / 60)} min<small>max reps · count them</small></div></div>`;
+  }
+  if (isGroup(b)) {
+    const head = `<div class="block-head">${esc(b.label ? 'Block ' + b.label : 'Circuit')}<span>${b.rounds} rounds</span></div>`;
+    const rows = (b.items || []).map((it, ii) => {
+      const r = itemRest(b, it, ii);
+      const sub = [r ? `rest ${r} s` : 'no rest', it.load, it.note].filter(Boolean).join(' · ');
+      return `<div class="block-row"><div class="block-name">${lbl(itemLabel(b, ii))}${esc(itemName(it))}</div><div class="block-rx">${esc(itemRx(it))}<small>${esc(sub)}</small></div></div>`;
+    }).join('');
+    return `<div class="block-group">${head}${rows}</div>`;
   }
   const sub = [`rest ${blockRest(b)} s`, b.load, b.note].filter(Boolean).join(' · ');
-  return `<div class="block-row${b.optional ? ' optional' : ''}"><div class="block-name">${esc(exName(b.exercise))}${b.optional ? ' <small>optional</small>' : ''}</div><div class="block-rx">${esc(rxText(b))}<small>${esc(sub)}</small></div></div>`;
+  return `<div class="block-row${b.optional ? ' optional' : ''}"><div class="block-name">${lbl(b.label)}${esc(itemName(b))}${b.optional ? ' <small>optional</small>' : ''}</div><div class="block-rx">${esc(rxText(b))}<small>${esc(sub)}</small></div></div>`;
 }
 
 // ── phase expansion ──
 function buildSessionPhases(s) {
   const P = [];
-  const work = (it, blockIdx, itemIdx, setIdx, setsTotal, roundLabel, extra) => {
-    const sided = isSided(it), timed = isTimed(it);
-    (sided ? ['LEFT', 'RIGHT'] : [null]).forEach(side => P.push(Object.assign({
+  const work = (it, b, bi, ii, setIdx, setsTotal, roundLabel) => {
+    const timed = isTimed(it), sides = sidesOf(it), x = S.exMap[it.exercise] || {};
+    sides.forEach(side => P.push({
       kind: 'work', timed, dur: timed ? it.seconds * 1000 : null,
-      ex: exName(it.exercise), side, target: timed ? it.seconds : (it.reps || 0),
-      load: it.load || '', note: it.note || '',
-      blockIdx, itemIdx, setIdx, setsTotal, roundLabel: roundLabel || '',
-    }, extra || {})));
+      ex: exName(it.exercise), side, badge: x.badge || '',
+      target: timed ? it.seconds : (it.reps || 0), load: it.load || '', note: it.note || '',
+      blockIdx: bi, itemIdx: ii, setIdx, setsTotal, roundLabel: roundLabel || '', label: itemLabel(b, ii),
+    }));
   };
   (s.blocks || []).forEach((b, bi) => {
     if (b.type === 'amrap') {
-      P.push({ kind: 'work', timed: true, dur: (b.seconds || 0) * 1000, ex: exName(b.exercise), side: null,
+      P.push({ kind: 'work', timed: true, dur: (b.seconds || 0) * 1000, ex: exName(b.exercise), side: null, badge: '',
         target: b.seconds || 0, load: b.load || '', note: 'max reps · count them',
-        blockIdx: bi, itemIdx: 0, setIdx: 0, setsTotal: 1, roundLabel: '', amrap: true });
+        blockIdx: bi, itemIdx: 0, setIdx: 0, setsTotal: 1, roundLabel: '', label: b.label || '', amrap: true });
       return;
     }
-    if (b.type === 'circuit') {
+    if (isGroup(b)) {
       for (let r = 0; r < b.rounds; r++) {
-        (b.items || []).forEach((it, ii) => work(it, bi, ii, r, b.rounds, `Round ${r + 1} of ${b.rounds}`));
-        if (blockRest(b) > 0 && r < b.rounds - 1) P.push({ kind: 'rest', timed: true, dur: blockRest(b) * 1000, blockIdx: bi });
+        (b.items || []).forEach((it, ii) => {
+          work(it, b, bi, ii, r, b.rounds, `Round ${r + 1} of ${b.rounds}`);
+          const rest = itemRest(b, it, ii);
+          if (rest > 0) P.push({ kind: 'rest', timed: true, dur: rest * 1000, blockIdx: bi });
+        });
       }
       return;
     }
     for (let k = 0; k < (b.sets || 1); k++) {
-      work(b, bi, 0, k, b.sets || 1, '');
+      work(b, b, bi, 0, k, b.sets || 1, '');
       if (blockRest(b) > 0) P.push({ kind: 'rest', timed: true, dur: blockRest(b) * 1000, blockIdx: bi });
     }
   });
@@ -1297,9 +1329,9 @@ function renderRunStatic() {
   const p = S.phases[S.idx]; if (!p) return;
   const isRest = p.kind === 'rest', isReady = !!p.ready, paused = S.status === 'paused';
   const badge = document.getElementById('run-badge');
-  badge.textContent = isReady ? 'READY' : isRest ? 'REST' : p.timed ? (p.amrap ? 'AMRAP' : 'HOLD') : 'SET';
+  badge.textContent = isReady ? 'READY' : isRest ? 'REST' : p.badge || (p.timed ? (p.amrap ? 'AMRAP' : 'HOLD') : 'SET');
   badge.className = 'phase-badge' + (isRest && !isReady ? ' rest' : '');
-  const setLabel = isRest ? '' : (p.roundLabel || `Set ${p.setIdx + 1} of ${p.setsTotal}`);
+  const setLabel = isRest ? '' : (p.label ? p.label + ' · ' : '') + (p.roundLabel || `Set ${p.setIdx + 1} of ${p.setsTotal}`);
   document.getElementById('run-progress').innerHTML = `${S.idx + 1} / ${S.phases.length}<strong>${esc(setLabel) || '&nbsp;'}</strong>`;
 
   const nameEl = document.getElementById('run-ex-name');
@@ -1362,21 +1394,19 @@ document.addEventListener('visibilitychange', () => {
 // ── finishing + log ──
 function summarizeBlocks(s) {
   return (s.blocks || []).map((b, bi) => {
-    const isCircuit = b.type === 'circuit', isAmrap = b.type === 'amrap';
-    const items = isCircuit ? (b.items || []) : [b];
+    const isAmrap = b.type === 'amrap';
+    const items = isGroup(b) ? (b.items || []) : [b];
     const entries = items.map((it, ii) => {
       const idxs = S.phases.map((p, i) => (p.kind === 'work' && p.blockIdx === bi && p.itemIdx === ii) ? i : -1).filter(i => i >= 0);
-      const sided = isSided(it), step = sided ? 2 : 1;
+      const both = isSided(it), step = both ? 2 : 1, timed = isTimed(it);
+      const fa = v => (timed && v >= 90) ? fmtMMSS(v) : String(v);
       const acts = [];
       for (let k = 0; k + step - 1 < idxs.length; k += step) {
         const a = S.results[idxs[k]]; if (a.actual == null) break;
-        if (sided) { const r2 = S.results[idxs[k + 1]]; acts.push(`L${a.actual} R${r2.actual != null ? r2.actual : '-'}`); }
-        else acts.push(String(a.actual));
+        if (both) { const r2 = S.results[idxs[k + 1]]; acts.push(`L${fa(a.actual)} R${r2.actual != null ? fa(r2.actual) : '-'}`); }
+        else acts.push(fa(a.actual));
       }
-      const rx = isAmrap ? `${Math.round((b.seconds || 0) / 60)} min AMRAP`
-        : isCircuit ? `${b.rounds} × ${itemRx(it)}`
-        : `${rxText(b)}, rest ${blockRest(b)} s`;
-      return { exercise: exName(it.exercise), rx, load: it.load || '', sided, actual: acts, of: idxs.length / step };
+      return { exercise: entryName(b, it, ii), rx: entryRx(b, it, ii), load: it.load || '', sided: both, actual: acts, of: idxs.length / step };
     });
     const restIdxs = S.phases.map((p, i) => (p.kind === 'rest' && p.blockIdx === bi) ? i : -1).filter(i => i >= 0);
     return { amrap: isAmrap, amrapReps: null, restSkipped: restIdxs.filter(i => S.results[i].skipped).length, entries };
@@ -1387,8 +1417,7 @@ function makeRecord(s, aborted, manual) {
   const durationSec = manual ? 0 : Math.round((Date.now() - S.startedAt) / 1000);
   const blocks = manual
     ? (s.blocks || []).map(b => ({ amrap: b.type === 'amrap', amrapReps: null, restSkipped: 0,
-        entries: (b.type === 'circuit' ? (b.items || []) : [b]).map(it => ({ exercise: exName(it.exercise),
-          rx: b.type === 'amrap' ? `${Math.round((b.seconds || 0) / 60)} min AMRAP` : b.type === 'circuit' ? `${b.rounds} × ${itemRx(it)}` : `${rxText(b)}, rest ${blockRest(b)} s`,
+        entries: (isGroup(b) ? (b.items || []) : [b]).map((it, ii) => ({ exercise: entryName(b, it, ii), rx: entryRx(b, it, ii),
           load: it.load || '', sided: isSided(it), actual: [], of: 0 })) }))
     : summarizeBlocks(s);
   return { sessionId: s.id, name: s.name, day: s.day || '', date: s.date || todayISO(), completedAt: new Date().toISOString(),
@@ -1458,11 +1487,11 @@ function renderSummary(rec) {
   document.getElementById('sum-title').textContent = rec.aborted ? 'ENDED' : rec.manual ? 'LOGGED' : 'DONE';
   document.getElementById('sum-meta').textContent = `${rec.day ? rec.day + ' · ' : ''}${rec.name}${rec.manual ? '' : ' · ' + fmtMMSS(rec.durationSec)}`;
   const lines = [];
-  rec.blocks.forEach((b, bi) => b.entries.forEach(e => {
+  rec.blocks.forEach((b, bi) => b.entries.forEach((e, ei) => {
     const act = b.amrap
       ? `<input type="number" inputmode="numeric" placeholder="reps" value="${b.amrapReps != null ? b.amrapReps : ''}" onchange="setAmrapReps(${bi}, this.value)">`
       : esc(actualText(rec, b, e));
-    const small = [e.rx, e.load, b.restSkipped ? `${b.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
+    const small = [e.rx, e.load, b.restSkipped && ei === 0 ? `${b.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
     lines.push(`<div class="sum-line"><div class="sum-ex">${esc(e.exercise)}</div><div class="sum-act">${act}<small>${esc(small)}</small></div></div>`);
   }));
   document.getElementById('sum-lines').innerHTML = lines.join('');
@@ -1475,8 +1504,8 @@ function setAmrapReps(bi, v) { if (!S.record) return; const n = parseInt(v, 10);
 
 function recordText(rec) {
   const L = [`${rec.date}${rec.day ? ' ' + rec.day : ''} · ${rec.name} · ${rec.manual ? 'no timer' : fmtMMSS(rec.durationSec)}${rec.aborted ? ' · ended early' : ''}`];
-  rec.blocks.forEach(b => b.entries.forEach(e => {
-    const extras = [e.load, b.restSkipped ? `${b.restSkipped} rest skipped` : ''].filter(Boolean);
+  rec.blocks.forEach(b => b.entries.forEach((e, ei) => {
+    const extras = [e.load, b.restSkipped && ei === 0 ? `${b.restSkipped} rest skipped` : ''].filter(Boolean);
     L.push(`- ${e.exercise}: ${e.rx}${extras.length ? ' (' + extras.join(', ') + ')' : ''} → ${actualText(rec, b, e)}`);
   }));
   if (rec.notes) L.push(`Notes: ${rec.notes}`);

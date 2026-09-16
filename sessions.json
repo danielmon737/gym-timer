@@ -1,6 +1,6 @@
 {
   "week": "2026-W38",
-  "updated": "2026-09-15",
+  "updated": "2026-09-16",
   "sessions": [
     {
       "id": "2026-09-14-circuit",
@@ -10,25 +10,102 @@
       "done": true,
       "note": "Done after the easy 5.3 km. Logged at the Sep 14 review.",
       "blocks": [
-        { "type": "circuit", "rounds": 5, "rest": 0,
+        {
+          "type": "circuit",
+          "rounds": 5,
+          "rest": 0,
           "items": [
-            { "exercise": "pullup", "reps": 4 },
-            { "exercise": "pushup", "reps": 8 },
-            { "exercise": "bss", "reps": 4, "load": "15 lb KB" }
-          ] }
+            {
+              "exercise": "pullup",
+              "reps": 4
+            },
+            {
+              "exercise": "pushup",
+              "reps": 8
+            },
+            {
+              "exercise": "bss",
+              "reps": 4,
+              "load": "15 lb KB"
+            }
+          ]
+        }
       ]
     },
     {
       "id": "2026-09-16-core",
       "date": "2026-09-16",
       "day": "Wed",
-      "name": "Core",
-      "note": "Priority session of the week. Rested sets, not a circuit. No rowing if legs are sore.",
+      "name": "Core + plyo",
+      "note": "Rested sets, not a circuit. Box jumps: first plyo work since March — step down, never jump down. Skip the row in the warm-up if legs are sore.",
       "blocks": [
-        { "exercise": "plank",      "sets": 3, "seconds": 45, "rest": 60 },
-        { "exercise": "side_plank", "sets": 2, "seconds": 30, "rest": 45 },
-        { "exercise": "ab_roller",  "sets": 3, "reps": 8,     "rest": 90, "note": "from knees" },
-        { "exercise": "pullup",     "sets": 4, "reps": 5,     "rest": 90, "optional": true }
+        {
+          "exercise": "z2_warmup",
+          "sets": 1,
+          "seconds": 600,
+          "rest": 60,
+          "note": "bike, row or jump rope"
+        },
+        {
+          "type": "block",
+          "label": "A",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "plank",
+              "seconds": 45,
+              "rest": 60
+            },
+            {
+              "exercise": "side_plank",
+              "side": "R",
+              "seconds": 30,
+              "rest": 45
+            },
+            {
+              "exercise": "side_plank",
+              "side": "L",
+              "seconds": 30,
+              "rest": 45
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "ab_roller",
+              "reps": 8,
+              "rest": 90,
+              "note": "from knees"
+            },
+            {
+              "exercise": "box_jump",
+              "reps": 8,
+              "rest": 90,
+              "note": "step down"
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 4,
+          "items": [
+            {
+              "exercise": "pullup",
+              "reps": 5,
+              "rest": 0
+            },
+            {
+              "exercise": "pushup",
+              "reps": 10,
+              "rest": 90
+            }
+          ]
+        }
       ]
     },
     {
@@ -39,8 +116,19 @@
       "when": "after the tempo",
       "note": "Second exposure to split squats. Stop 2 short of failure on everything. No bodyweight squats this week.",
       "blocks": [
-        { "exercise": "glute_bridge", "sets": 3, "reps": 12, "rest": 60 },
-        { "exercise": "bss",          "sets": 2, "reps": 6,  "rest": 90, "load": "15 lb KB" }
+        {
+          "exercise": "glute_bridge",
+          "sets": 3,
+          "reps": 12,
+          "rest": 60
+        },
+        {
+          "exercise": "bss",
+          "sets": 2,
+          "reps": 6,
+          "rest": 90,
+          "load": "15 lb KB"
+        }
       ]
     }
   ]

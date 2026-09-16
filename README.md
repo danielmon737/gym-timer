@@ -18,10 +18,13 @@ enforced rest between sets (skip or +30 s). Exercise names and types come from
 - Mistakes are cheap: ending a session before any set is recorded saves nothing, the summary
   has "Discard this log", and the session screen shows "Clear this session's log" once
   anything is logged for it on that phone.
-- Block shapes: `{exercise, sets, reps|seconds, rest, load?, note?, optional?}`,
-  `{type:"circuit", rounds, rest, items:[{exercise, reps|seconds, load?}]}`, and
+- Block shapes: `{exercise, sets, reps|seconds, rest, load?, note?, optional?, label?}` for
+  straight sets; `{type:"block", label:"A", rounds, items:[{exercise, reps|seconds, rest,
+  load?, note?, side?}], rest?}` for supersets and circuits (items run A1, A2, … each round,
+  each item's `rest` follows it, block `rest` follows the last item if it has none);
   `{type:"amrap", exercise, seconds}`. The exercise `type` decides untimed vs timed and
-  per-side: `reps`, `reps_side`, `time`, `time_side`.
+  per-side: `reps`, `reps_side`, `time`, `time_side`. An item `side: "R"` or `"L"` runs one
+  side only. An exercise `badge` (e.g. `WARM-UP`) replaces the SET/HOLD label in the runner.
 
 ## How to deploy (free, 5 minutes)
 
