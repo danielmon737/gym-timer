@@ -474,8 +474,9 @@
   <div id="sess-detail"></div>
   <div class="detail-actions">
     <button class="start-btn" onclick="startSession()">START SESSION</button>
-    <div style="text-align:center; margin-top:6px;">
+    <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:6px;">
       <button class="text-btn" onclick="markDoneManual()">Did it without the timer · mark done</button>
+      <button class="text-btn" id="clear-log-btn" onclick="clearSessionLog()" hidden>Clear this session's log</button>
     </div>
   </div>
 </div>
@@ -513,6 +514,9 @@
   <div class="sum-actions">
     <button class="ctrl-btn" onclick="showScreen('mode'); renderHome();">HOME</button>
     <button class="ctrl-btn primary" onclick="copySessionLog()">COPY LOG</button>
+  </div>
+  <div style="text-align:center; flex-shrink:0;">
+    <button class="text-btn" onclick="discardRecord()">Discard this log</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -1067,7 +1071,7 @@ const S = {
   plan: null, exMap: {}, session: null, record: null,
   phases: [], results: [], idx: 0, status: 'idle',
   wallStart: 0, pausedElapsed: 0, intervalId: null, lastRemSec: -1,
-  startedAt: 0, repsVal: 0,
+  startedAt: 0, repsVal: 0, sessionIdx: -1,
 };
 
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } }
@@ -1158,7 +1162,7 @@ function renderHome() {
 // ── session detail ──
 function openSession(i) {
   const s = S.plan.sessions[i]; if (!s) return;
-  S.session = s;
+  S.session = s; S.sessionIdx = i;
   document.getElementById('sess-title').textContent = `${s.day ? s.day + ' · ' : ''}${s.name}`.toUpperCase();
   const parts = [];
   if (isDone(s)) parts.push(`<div class="sess-note muted">Done ✓ — start again to repeat it, or go back.</div>`);
@@ -1166,6 +1170,7 @@ function openSession(i) {
   parts.push(`<div class="block-list">${(s.blocks || []).map(blockRowHTML).join('')}</div>`);
   parts.push(`<div class="sess-est">~${estimateMin(s)} min with rest</div>`);
   document.getElementById('sess-detail').innerHTML = parts.join('');
+  document.getElementById('clear-log-btn').hidden = !hasLocalLog(s);
   showScreen('session');
 }
 
@@ -1403,9 +1408,37 @@ function finishSession(aborted) {
   clearInterval(S.intervalId); S.intervalId = null;
   S.status = 'done'; releaseWakeLock();
   const rec = makeRecord(S.session, aborted, false);
+  if (aborted && !recordHasWork(rec)) { toast('NOTHING LOGGED'); showScreen('mode'); renderHome(); return; }
   saveRecord(rec); S.record = rec;
   if (!aborted) { doFlash('#C8FF00'); alarmBeep(); }
   renderSummary(rec); showScreen('summary');
+}
+
+function recordHasWork(rec) {
+  return rec.manual || rec.blocks.some(b => b.amrapReps != null || b.entries.some(e => e.actual.length > 0));
+}
+function hasLocalLog(s) {
+  return lsGet(LS.log, []).some(r => r.sessionId === s.id) || !!lsGet(LS.done, {})[s.id];
+}
+
+// Drop the record currently shown on the summary (and its done mark, if it set one).
+function discardRecord() {
+  const rec = S.record; if (!rec) return;
+  if (!confirm('Discard this log?')) return;
+  lsSet(LS.log, lsGet(LS.log, []).filter(r => !(r.sessionId === rec.sessionId && r.completedAt === rec.completedAt)));
+  const d = lsGet(LS.done, {});
+  if (d[rec.sessionId] === rec.completedAt) { delete d[rec.sessionId]; lsSet(LS.done, d); }
+  S.record = null; toast('DISCARDED');
+  showScreen('mode'); renderHome();
+}
+
+// Wipe everything this phone has logged for the open session.
+function clearSessionLog() {
+  const s = S.session; if (!s) return;
+  if (!confirm('Clear everything logged for this session on this phone?')) return;
+  lsSet(LS.log, lsGet(LS.log, []).filter(r => r.sessionId !== s.id));
+  const d = lsGet(LS.done, {}); delete d[s.id]; lsSet(LS.done, d);
+  toast('CLEARED'); openSession(S.sessionIdx);
 }
 
 function markDoneManual() {

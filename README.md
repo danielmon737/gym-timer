@@ -15,6 +15,9 @@ enforced rest between sets (skip or +30 s). Exercise names and types come from
   the last downloaded copy is used.
 - Done state and session logs stay in the phone's localStorage. "Copy log" and "Copy week
   log" put a plain-text summary on the clipboard to paste into the weekly review.
+- Mistakes are cheap: ending a session before any set is recorded saves nothing, the summary
+  has "Discard this log", and the session screen shows "Clear this session's log" once
+  anything is logged for it on that phone.
 - Block shapes: `{exercise, sets, reps|seconds, rest, load?, note?, optional?}`,
   `{type:"circuit", rounds, rest, items:[{exercise, reps|seconds, load?}]}`, and
   `{type:"amrap", exercise, seconds}`. The exercise `type` decides untimed vs timed and
