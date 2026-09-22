@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-16",
+  "updated": "2026-09-21",
   "types": {
     "reps": "counted reps, untimed set",
     "reps_side": "counted reps, left then right",
@@ -22,6 +22,7 @@
     {"id": "squat", "name": "Back squat", "type": "reps", "equipment": "barbell", "group": "legs"},
     {"id": "goblet_squat", "name": "Goblet squat", "type": "reps", "equipment": "kettlebell", "group": "legs"},
     {"id": "bw_squat", "name": "Bodyweight squats", "type": "reps", "equipment": "bodyweight", "group": "legs"},
+    {"id": "banded_squat", "name": "Banded squats", "type": "reps", "equipment": "band", "group": "legs", "cue": "band above knees, push knees out"},
     {"id": "bss", "name": "Bulgarian split squat", "type": "reps_side", "equipment": "kettlebell or dumbbells", "group": "legs"},
     {"id": "step_up", "name": "Step-ups", "type": "reps_side", "equipment": "box, kettlebell", "group": "legs"},
     {"id": "reverse_lunge", "name": "Reverse lunge", "type": "reps_side", "equipment": "bodyweight or dumbbells", "group": "legs"},
@@ -45,6 +46,7 @@
     {"id": "side_plank", "name": "Side plank", "type": "time_side", "equipment": "bodyweight", "group": "core"},
     {"id": "hollow_hold", "name": "Hollow hold", "type": "time", "equipment": "bodyweight", "group": "core"},
     {"id": "dead_bug", "name": "Dead bug", "type": "reps_side", "equipment": "bodyweight", "group": "core"},
+    {"id": "banded_dead_bug", "name": "Banded dead bug", "type": "reps_side", "equipment": "band", "group": "core", "cue": "band around feet, low back flat"},
     {"id": "bird_dog", "name": "Bird dog", "type": "reps_side", "equipment": "bodyweight", "group": "core"},
     {"id": "v_up", "name": "V-ups", "type": "reps", "equipment": "bodyweight", "group": "core"},
     {"id": "ab_roller", "name": "Ab roller", "type": "reps", "equipment": "ab roller", "group": "core"},
@@ -56,6 +58,7 @@
     {"id": "jump_rope", "name": "Jump rope", "type": "time", "equipment": "rope", "group": "conditioning"},
     {"id": "bike_z2", "name": "Bike Z2", "type": "time", "equipment": "bike", "group": "conditioning"},
     {"id": "box_jump", "name": "Box jumps", "type": "reps", "equipment": "box", "group": "plyo", "cue": "step down, land soft"},
+    {"id": "kneeling_jump_squat", "name": "Kneeling jump squats", "type": "reps", "equipment": "mat", "group": "plyo", "cue": "explosive hip drive, land in a low squat"},
     {"id": "burpee_box_jump", "name": "Burpee box jumps", "type": "reps", "equipment": "box", "group": "conditioning"}
   ]
 }

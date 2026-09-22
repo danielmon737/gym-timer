@@ -1,50 +1,80 @@
 {
-  "week": "2026-W38",
-  "updated": "2026-09-16",
+  "week": "2026-W39",
+  "updated": "2026-09-21",
   "sessions": [
     {
-      "id": "2026-09-14-circuit",
-      "date": "2026-09-14",
-      "day": "Mon",
-      "name": "Circuit",
-      "done": true,
-      "note": "Done after the easy 5.3 km. Logged at the Sep 14 review.",
+      "id": "2026-09-22-legs-core",
+      "date": "2026-09-22",
+      "day": "Tue",
+      "name": "Legs + core · light",
+      "when": "after the 6 km easy run",
+      "note": "Taper week: familiar movements only, stop 2 short of failure. Last leg work before Saturday.",
       "blocks": [
         {
-          "type": "circuit",
-          "rounds": 5,
-          "rest": 0,
+          "type": "block",
+          "label": "A",
+          "rounds": 3,
           "items": [
             {
-              "exercise": "pullup",
-              "reps": 4
+              "exercise": "banded_squat",
+              "reps": 10,
+              "rest": 60,
+              "note": "band above knees"
             },
             {
-              "exercise": "pushup",
-              "reps": 8
+              "exercise": "glute_bridge",
+              "reps": 12,
+              "rest": 60
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "pogo_hop",
+              "reps": 15,
+              "rest": 60,
+              "note": "low, quick, stiff ankles"
             },
             {
-              "exercise": "bss",
-              "reps": 4,
-              "load": "15 lb KB"
+              "exercise": "box_jump",
+              "reps": 5,
+              "rest": 90,
+              "note": "step down"
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "banded_dead_bug",
+              "reps": 8,
+              "rest": 60,
+              "note": "round 1 empty hands; rounds 2-3 hold a 10 lb med ball overhead if the low back stays flat"
             }
           ]
         }
       ]
     },
     {
-      "id": "2026-09-16-core",
-      "date": "2026-09-16",
+      "id": "2026-09-23-core-upper",
+      "date": "2026-09-23",
       "day": "Wed",
-      "name": "Core + plyo",
-      "note": "Rested sets, not a circuit. Box jumps: first plyo work since March — step down, never jump down. Skip the row in the warm-up if legs are sore.",
+      "name": "Core + upper",
+      "note": "No legs, no plyo. Rested sets, not a circuit.",
       "blocks": [
         {
           "exercise": "z2_warmup",
           "sets": 1,
-          "seconds": 600,
+          "seconds": 480,
           "rest": 60,
-          "note": "bike, row or jump rope"
+          "note": "bike or jump rope"
         },
         {
           "type": "block",
@@ -53,19 +83,19 @@
           "items": [
             {
               "exercise": "plank",
-              "seconds": 45,
+              "seconds": 50,
               "rest": 60
             },
             {
               "exercise": "side_plank",
               "side": "R",
-              "seconds": 30,
+              "seconds": 35,
               "rest": 45
             },
             {
               "exercise": "side_plank",
               "side": "L",
-              "seconds": 30,
+              "seconds": 35,
               "rest": 45
             }
           ]
@@ -78,14 +108,13 @@
             {
               "exercise": "ab_roller",
               "reps": 8,
-              "rest": 90,
+              "rest": 75,
               "note": "from knees"
             },
             {
-              "exercise": "box_jump",
-              "reps": 8,
-              "rest": 90,
-              "note": "step down"
+              "exercise": "hollow_hold",
+              "seconds": 20,
+              "rest": 60
             }
           ]
         },
@@ -100,34 +129,11 @@
               "rest": 0
             },
             {
-              "exercise": "pushup",
-              "reps": 10,
+              "exercise": "dip",
+              "reps": 8,
               "rest": 90
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "2026-09-19-strength-b",
-      "date": "2026-09-19",
-      "day": "Sat",
-      "name": "Strength B · light",
-      "when": "after the tempo",
-      "note": "Second exposure to split squats. Stop 2 short of failure on everything. No bodyweight squats this week.",
-      "blocks": [
-        {
-          "exercise": "glute_bridge",
-          "sets": 3,
-          "reps": 12,
-          "rest": 60
-        },
-        {
-          "exercise": "bss",
-          "sets": 2,
-          "reps": 6,
-          "rest": 90,
-          "load": "15 lb KB"
         }
       ]
     }
