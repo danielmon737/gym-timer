@@ -340,6 +340,7 @@
     .sess-title small { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: var(--neutral); text-transform: uppercase; margin-left: 8px; }
     .blk-lines { font-size: 13px; color: var(--neutral); letter-spacing: 1px; margin-top: 6px; line-height: 1.5; }
     .sess-card.done .blk-lines { display: none; }
+    .blk-note { font-size: 13px; color: var(--text); letter-spacing: 1px; margin-top: 6px; line-height: 1.4; font-style: italic; }
     #screen-block { justify-content: flex-start; }
 
     /* ── SESSION DETAIL ── */
@@ -414,6 +415,8 @@
   <div class="section-label">This week <span id="week-label"></span></div>
   <div id="sess-list"></div>
   <div class="home-foot">
+    <button class="text-btn" id="save-log-btn" onclick="saveLogFile()" hidden>Save log to Files</button>
+    <span style="flex:1"></span>
     <button class="text-btn" id="copy-week-btn" onclick="copyWeekLog()" hidden>Copy week log</button>
   </div>
   <div class="section-label">Free timer</div>
@@ -499,8 +502,9 @@
     </div>
   </div>
   <div id="blk-detail"></div>
+  <textarea class="notes" id="blk-notes" placeholder="Swaps or notes for this block (e.g. dips instead of push-ups)" hidden></textarea>
   <div class="detail-actions">
-    <button class="start-btn" onclick="startBlock()">START BLOCK</button>
+    <button class="start-btn" id="start-block-btn" onclick="startBlock()">START BLOCK</button>
     <div style="text-align:center; margin-top:6px;">
       <button class="text-btn" id="reset-block-btn" onclick="resetBlock()" hidden>Reset this block · nothing logged</button>
     </div>
@@ -1228,6 +1232,7 @@ function renderHome() {
     </div>`;
   }).join('');
   copyBtn.hidden = !ss.some(s => sessState(s.id));
+  document.getElementById('save-log-btn').hidden = !Object.keys(allState()).length;
 }
 
 // ── session screen: one card per block ──
@@ -1263,6 +1268,7 @@ function blockCardHTML(s, b, bi) {
       <div class="sess-title">${esc(blockTitle(b))}${b.optional ? '<small>optional</small>' : ''}</div>
       ${meta ? `<div class="sess-meta">${esc(meta)}</div>` : ''}
       ${lines.length ? `<div class="blk-lines">${lines.map(l => `<div>${esc(l)}</div>`).join('')}</div>` : ''}
+      ${done && blockResult(s, bi) && blockResult(s, bi).note ? `<div class="blk-note">${esc(blockResult(s, bi).note)}</div>` : ''}
     </div>
     <div class="sess-icon">${icon}</div>
   </div>`;
@@ -1282,6 +1288,10 @@ function openBlock(bi) {
   parts.push(`<div class="sess-est">~${estimateBlockMin(b)} min with rest</div>`);
   document.getElementById('blk-detail').innerHTML = parts.join('');
   document.getElementById('reset-block-btn').hidden = !res;
+  document.getElementById('start-block-btn').textContent = res ? 'START AGAIN' : 'START BLOCK';
+  const ta = document.getElementById('blk-notes');
+  ta.hidden = !res; ta.value = res && res.note ? res.note : '';
+  ta.oninput = () => { const cur = sessState(s.id); if (cur && cur.blocks && cur.blocks[bi]) { cur.blocks[bi].note = ta.value; setSessState(s.id, cur); } };
   showScreen('block');
 }
 
@@ -1510,7 +1520,7 @@ function finishBlock(aborted) {
   setSessState(s.id, st);
   doFlash('#C8FF00'); alarmBeep();
   if (sessionDone(s)) { toast('SESSION DONE'); openSummary(); }
-  else { toast('BLOCK DONE'); openSession(S.sessionIdx); }
+  else { toast('BLOCK DONE'); openBlock(bi); }
 }
 
 function resetBlock() {
@@ -1557,6 +1567,7 @@ function openSummary() {
       const small = [e.rx, e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
       lines.push(`<div class="sum-line"><div class="sum-ex">${esc(e.exercise)}</div><div class="sum-act">${act}<small>${esc(small)}</small></div></div>`);
     });
+    if (res && res.note) lines.push(`<div class="sum-line"><div class="sum-ex blk-note">${esc(res.note)}</div></div>`);
   });
   document.getElementById('sum-lines').innerHTML = lines.join('');
   const ta = document.getElementById('sum-notes');
@@ -1588,6 +1599,7 @@ function sessionText(s) {
       const extras = [e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : ''].filter(Boolean);
       L.push(`- ${e.exercise}: ${e.rx}${extras.length ? ' (' + extras.join(', ') + ')' : ''} → ${entryActual(st, b, res, e)}`);
     });
+    if (res && res.note) L.push(`  ${blockTitle(b)} note: ${res.note}`);
   });
   if (st.notes) L.push(`Notes: ${st.notes}`);
   return L.join('\n');
@@ -1614,6 +1626,47 @@ function copyWeekLog() {
   const texts = (S.plan.sessions || []).filter(s => sessState(s.id)).map(sessionText);
   if (!texts.length) { toast('NOTHING LOGGED'); return; }
   copyText(`Strength log · ${S.plan.week || ''}\n\n` + texts.join('\n\n'));
+}
+
+// ── save the whole log as a file (share sheet → Save to Files → coach/data/strength/) ──
+// Every session still on this phone, not just this week's, so older weeks are included.
+// A session that has left sessions.json is described from its stored entries.
+function storedText(id, st) {
+  const L = [`${id} · ${Object.keys(st.blocks || {}).length} blocks logged${st.manual ? ' · no timer' : ''}`];
+  Object.keys(st.blocks || {}).sort((a, b) => a - b).forEach(bi => {
+    const res = st.blocks[bi];
+    (res.entries || []).forEach(e => {
+      const act = res.amrapReps != null ? res.amrapReps + ' reps' : (e.actual && e.actual.length ? e.actual.join(e.sided ? ' · ' : '/') : 'not done');
+      L.push(`- ${e.exercise}: ${e.rx}${e.load ? ' (' + e.load + ')' : ''} → ${act}`);
+    });
+    if (res.note) L.push(`  block ${+bi + 1} note: ${res.note}`);
+  });
+  if (st.notes) L.push(`Notes: ${st.notes}`);
+  return L.join('\n');
+}
+function logExport() {
+  const all = allState();
+  const sessions = Object.keys(all).sort().map(id => {
+    const s = S.plan && (S.plan.sessions || []).find(x => x.id === id);
+    return { id, date: s ? s.date || '' : id.slice(0, 10), name: s ? s.name : '', week: s ? S.plan.week || '' : '',
+             text: s ? sessionText(s) : storedText(id, all[id]), session: s || null, state: all[id] };
+  });
+  return { exported_at: new Date().toISOString(), current_week: (S.plan && S.plan.week) || '', sessions };
+}
+async function saveLogFile() {
+  const data = logExport();
+  if (!data.sessions.length) { toast('NOTHING LOGGED'); return; }
+  const name = `gym-log-${todayISO()}.json`;
+  const file = new File([JSON.stringify(data, null, 2) + '\n'], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); toast('SAVED'); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(file); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  toast('DOWNLOADED');
 }
 
 document.addEventListener('DOMContentLoaded', loadPlan);

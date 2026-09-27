@@ -15,8 +15,14 @@ block is. Exercise names and types come from `exercises.json`.
 - `sessions.json` is rewritten each week by the coaching review and pushed. The app fetches
   it network-first, so a new week shows up on the next open without a cache bump. Offline,
   the last downloaded copy is used.
-- Done state and session logs stay in the phone's localStorage. "Copy log" and "Copy week
-  log" put a plain-text summary on the clipboard to paste into the weekly review.
+- Done state and session logs stay in the phone's localStorage. **"Save log to Files"** (home
+  screen) exports every session still on the phone — older weeks included — as
+  `gym-log-YYYY-MM-DD.json` through the share sheet; save it to iCloud Drive →
+  `Fitness/coach/data/strength/`, where the weekly review reads it. Each file is a full snapshot;
+  the newest one wins. "Copy log" / "Copy week log" (clipboard text) remain as a fallback.
+  No network write, no token: the log never touches this public repo.
+- A finished block shows a note box on its screen (swaps, e.g. "dips instead of push-ups").
+  The note is saved with that block's log and appears in the summary and both copy texts.
 - Mistakes are cheap: ending a block before any set is recorded saves nothing (after that it
   asks first, and still logs nothing), a finished block can be reset from its own screen, the
   summary has "Discard this log", and the session screen shows "Clear this session's log".

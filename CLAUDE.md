@@ -25,4 +25,5 @@ Parent folder `../` is the Fitness workspace; the coaching project is `../coach/
   or unregister the SW and clear caches in the page before reloading.
 - Test checklist after any runner change: a timed-hold block, a rep block with the stepper, a
   two-sided item, END before any set is recorded (nothing logged), reset of a finished block,
-  finishing the last block (session done + summary), and the Copy log text.
+  finishing the last block (session done + summary), the Copy log text, and Save log to Files
+  (a session from an older week still in localStorage must export via its stored entries).
