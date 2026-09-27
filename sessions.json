@@ -1,6 +1,30 @@
 {
   "week": "2026-W39",
   "updated": "2026-09-21",
+  "runs": [
+    {
+      "date": "2026-09-22",
+      "name": "Easy + strides",
+      "km": 6
+    },
+    {
+      "date": "2026-09-24",
+      "name": "Easy + strides",
+      "km": 5
+    },
+    {
+      "date": "2026-09-26",
+      "name": "5K time trial",
+      "km": 8.5,
+      "km_label": "~8.5",
+      "key": true
+    },
+    {
+      "date": "2026-09-27",
+      "name": "Recovery run",
+      "km": 5
+    }
+  ],
   "sessions": [
     {
       "id": "2026-09-22-legs-core",

@@ -16,6 +16,8 @@ Parent folder `../` is the Fitness workspace; the coaching project is `../coach/
 - Bump `CACHE_NAME` (`gym-timer-vN`) in `sw.js` whenever `index.html`, `manifest.json`, or the
   icons change, or installed phones keep showing the old version. JSON changes need no bump
   (the service worker fetches them network-first).
+- Home has three tabs: Strength · Runs · Timer (2026-09-27). `sessions.json` also carries `runs`
+  (type of workout + km only, read-only calendar; format in `README.md`). Runs never get HR bpm here.
 - Session ids are `YYYY-MM-DD-slug`. The phone keys per-block results on them, so never rename an
   id mid-week.
 - **Block format is the norm (since 2026-09-16).** Every session is a list of blocks (warm-up,
@@ -28,5 +30,6 @@ Parent folder `../` is the Fitness workspace; the coaching project is `../coach/
   or unregister the SW and clear caches in the page before reloading.
 - Test checklist after any runner change: a timed-hold block, a rep block with the stepper, a
   two-sided item, END before any set is recorded (nothing logged), reset of a finished block,
-  finishing the last block (session done + summary), the Copy log text, and Save log to Files
+  finishing the last block (session done + summary), the Copy log text, all three tabs render and
+  Back from a free-timer screen returns to the Timer tab, and Save log to Files
   (a session from an older week still in localStorage must export via its stored entries).

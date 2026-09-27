@@ -336,6 +336,27 @@
     .text-btn { background: none; border: none; color: var(--neutral); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 8px 2px; cursor: pointer; }
     .text-btn:active { color: var(--go); }
     .home-foot { display: flex; justify-content: flex-end; align-items: center; }
+    #screen-mode { padding-bottom: calc(max(env(safe-area-inset-bottom), 10px) + 64px); }
+    .tab-pane { display: flex; flex-direction: column; gap: 10px; }
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; gap: 6px;
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 6px 12px max(env(safe-area-inset-bottom), 10px); }
+    .tab-btn { flex: 1; background: none; border: none; border-radius: 8px; padding: 12px 4px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--neutral); cursor: pointer; }
+    .tab-btn.active { color: var(--go); background: var(--surface); }
+    #run-list { display: flex; flex-direction: column; gap: 6px; }
+    .run-day { display: flex; align-items: baseline; gap: 14px; padding: 12px 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    .run-day.today { border-color: var(--go); }
+    .run-day.past { opacity: 0.45; }
+    .run-day.off { background: none; border-style: dashed; }
+    .run-dow { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--neutral); width: 64px; flex-shrink: 0; }
+    .run-dow b { font-weight: normal; color: var(--text); }
+    .run-day.today .run-dow b { color: var(--go); }
+    .run-name { flex: 1; min-width: 0; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--text); line-height: 1.1; }
+    .run-day.key .run-name { color: var(--go); }
+    .run-day.off .run-name { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--neutral); }
+    .run-km { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; color: var(--neutral); flex-shrink: 0; }
     .run-ex-name.rest { color: var(--rest); }
     #blk-list { display: flex; flex-direction: column; gap: 8px; }
     .sess-title small { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: var(--neutral); text-transform: uppercase; margin-left: 8px; }
@@ -413,14 +434,20 @@
     <h1>WEEKLY TRAINING</h1>
     <p id="home-sub">Loading plan…</p>
   </div>
-  <div class="section-label">This week <span id="week-label"></span></div>
-  <div id="sess-list"></div>
-  <div class="home-foot">
-    <button class="text-btn" id="save-log-btn" onclick="saveLogFile()" hidden>Save log to Files</button>
-    <span style="flex:1"></span>
-    <button class="text-btn" id="copy-week-btn" onclick="copyWeekLog()" hidden>Copy week log</button>
+  <div class="tab-pane" id="pane-strength">
+    <div class="section-label">This week <span id="week-label"></span></div>
+    <div id="sess-list"></div>
+    <div class="home-foot">
+      <button class="text-btn" id="save-log-btn" onclick="saveLogFile()" hidden>Save log to Files</button>
+      <span style="flex:1"></span>
+      <button class="text-btn" id="copy-week-btn" onclick="copyWeekLog()" hidden>Copy week log</button>
+    </div>
   </div>
-  <div class="section-label">Free timer</div>
+  <div class="tab-pane" id="pane-runs" hidden>
+    <div class="section-label">Runs this week <span id="run-week-label"></span></div>
+    <div id="run-list"></div>
+  </div>
+  <div class="tab-pane" id="pane-timer" hidden>
   <div class="mode-btn" onclick="selectMode('interval')">
     <div class="mode-label">INTERVAL  |  EMOM  |  TABATA</div>
   </div>
@@ -433,8 +460,14 @@
   <div class="autolock-tip">
     📱 <strong>Tip:</strong> Set Auto-Lock to <strong>Never</strong> during workouts.<br>
     Settings → Display & Brightness → Auto-Lock<br>
-    <span style="opacity:.6">v10</span>
+    <span style="opacity:.6">v11</span>
   </div>
+  </div>
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="strength" onclick="setTab('strength')">Strength</button>
+    <button class="tab-btn" data-tab="runs" onclick="setTab('runs')">Runs</button>
+    <button class="tab-btn" data-tab="timer" onclick="setTab('timer')">Timer</button>
+  </nav>
 </div>
 
 <!-- ── CONFIG ── -->
@@ -1235,6 +1268,54 @@ function renderHome() {
   }).join('');
   copyBtn.hidden = !ss.some(s => sessState(s.id));
   document.getElementById('save-log-btn').hidden = !Object.keys(allState()).length;
+  renderRuns(); homeSub();
+}
+
+// ── tabs on the home screen: Strength · Runs · Timer ──
+let homeTab = 'strength';
+function setTab(t) {
+  homeTab = t;
+  ['strength', 'runs', 'timer'].forEach(k => { document.getElementById('pane-' + k).hidden = k !== t; });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  document.getElementById('screen-mode').scrollTop = 0;
+  homeSub();
+}
+function homeSub() {
+  const sub = document.getElementById('home-sub'); if (!S.plan) return;
+  if (homeTab === 'runs') {
+    const runs = S.plan.runs || [];
+    const km = runs.reduce((a, r) => a + (+r.km || 0), 0);
+    sub.textContent = runs.length ? `${runs.length} runs · ~${Math.round(km * 10) / 10} km` : 'No runs listed';
+  } else if (homeTab === 'timer') sub.textContent = 'Free timer';
+  else { const ss = S.plan.sessions || []; sub.textContent = ss.length ? `${ss.filter(isDone).length} of ${ss.length} done` : 'No plan loaded'; }
+}
+
+// ── runs: a read-only calendar of the week. Garmin is the record; nothing is logged here. ──
+// sessions.json "runs": [{ date, name, km, key? }] — name is the type of workout only.
+function isoWeekMonday(wk) {
+  const m = /^(\d{4})-W(\d{1,2})$/.exec(wk || ''); if (!m) return null;
+  const jan4 = new Date(Date.UTC(+m[1], 0, 4)), dow = (jan4.getUTCDay() + 6) % 7;
+  return new Date(Date.UTC(+m[1], 0, 4 - dow + (+m[2] - 1) * 7));
+}
+function renderRuns() {
+  const list = document.getElementById('run-list');
+  document.getElementById('run-week-label').textContent = (S.plan && S.plan.week) || '';
+  const mon = S.plan && isoWeekMonday(S.plan.week);
+  if (!mon) { list.innerHTML = `<div class="sess-empty">No week loaded.</div>`; return; }
+  const runs = S.plan.runs || [], ss = S.plan.sessions || [], today = todayISO();
+  const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  list.innerHTML = DOW.map((d, i) => {
+    const dt = new Date(mon); dt.setUTCDate(mon.getUTCDate() + i);
+    const iso = dt.toISOString().slice(0, 10);
+    const dayRuns = runs.filter(r => r.date === iso);
+    const cls = ['run-day', iso === today ? 'today' : '', iso < today ? 'past' : ''];
+    const dow = `<div class="run-dow"><b>${d}</b> ${dt.getUTCDate()}</div>`;
+    if (!dayRuns.length) {
+      const lift = ss.some(s => s.date === iso);
+      return `<div class="${cls.concat('off').join(' ')}">${dow}<div class="run-name">${lift ? 'No run · strength day' : 'Rest'}</div></div>`;
+    }
+    return dayRuns.map(r => `<div class="${cls.concat(r.key ? 'key' : '').join(' ')}">${dow}<div class="run-name">${esc(r.name)}</div>${r.km ? `<div class="run-km">${esc(r.km_label || r.km)} km</div>` : ''}</div>`).join('');
+  }).join('');
 }
 
 // ── session screen: one card per block ──

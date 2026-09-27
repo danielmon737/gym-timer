@@ -3,9 +3,21 @@
 A workout timer with HIIT, Tabata, AMRAP, and Countdown modes, plus a home for the
 week's strength sessions.
 
+## Tabs
+
+The home screen has three tabs along the bottom: **Strength** (this week's sessions, below),
+**Runs** (a read-only Mon–Sun calendar of the week's runs), and **Timer** (the free
+interval / countdown / stopwatch timers).
+
+**Runs** come from `sessions.json` → `"runs": [{date, name, km, km_label?, key?}]`. `name` is the
+type of workout only (e.g. "Easy + strides", "Threshold 4 × 1.2 km") — no HR, no paces in bpm;
+the exact targets live on the Garmin watch. `key: true` highlights a quality session or long run.
+Days with no run show "Rest", or "No run · strength day" if a strength session is on that date.
+Week dates come from `week` (ISO, `YYYY-Www`). Nothing is logged for runs — Garmin is the record.
+
 ## Weekly sessions
 
-The home screen lists this week's strength sessions from `sessions.json`. A session is a
+The Strength tab lists this week's strength sessions from `sessions.json`. A session is a
 list of blocks (warm-up, Block A, Block B, …). Each block is started on its own from the
 session screen and runs as guided phases: untimed sets with a Done button and a rep
 stepper, timed holds, and enforced rest between sets (skip or +30 s). Rest between blocks
