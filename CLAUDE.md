@@ -10,6 +10,9 @@ Parent folder `../` is the Fitness workspace; the coaching project is `../coach/
 - **The site is public.** `sessions.json` holds prescriptions only: exercise, sets or rounds, reps
   or seconds, load, rest, a short cue. Never HR, sleep, HRV, weight, or recovery notes. Those
   live in `../coach/` and stay there.
+- Shown on the phone as **Weekly Training** (renamed 2026-09-27; repo, URL and cache names stay
+  `gym-timer`). Icons: `icon-180/192/512.png`, lime runner emblem on #090909. The home screen shows
+  the version (`vN` under the Auto-Lock tip) — keep it equal to the `CACHE_NAME` number.
 - Bump `CACHE_NAME` (`gym-timer-vN`) in `sw.js` whenever `index.html`, `manifest.json`, or the
   icons change, or installed phones keep showing the old version. JSON changes need no bump
   (the service worker fetches them network-first).

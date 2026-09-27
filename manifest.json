@@ -1,6 +1,6 @@
 {
-  "name": "Gym Timer",
-  "short_name": "GymTimer",
+  "name": "Weekly Training",
+  "short_name": "Weekly Training",
   "description": "Workout timers plus this week's strength sessions, block by block",
   "start_url": "./index.html",
   "display": "standalone",

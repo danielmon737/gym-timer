@@ -1,4 +1,4 @@
-# Gym Timer PWA
+# Weekly Training (gym-timer PWA)
 
 A workout timer with HIIT, Tabata, AMRAP, and Countdown modes, plus a home for the
 week's strength sessions.

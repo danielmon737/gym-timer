@@ -1,10 +1,11 @@
-const CACHE_NAME = 'gym-timer-v9';
+const CACHE_NAME = 'gym-timer-v10';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './exercises.json',
   './sessions.json',
+  './icon-180.png',
   './icon-192.png',
   './icon-512.png',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;900&display=swap'
