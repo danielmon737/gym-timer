@@ -1,39 +1,120 @@
 {
-  "week": "2026-W39",
-  "updated": "2026-09-21",
+  "week": "2026-W42",
+  "updated": "2026-10-11",
   "runs": [
     {
-      "date": "2026-09-22",
+      "date": "2026-10-13",
       "name": "Easy + strides",
       "km": 6
     },
     {
-      "date": "2026-09-24",
-      "name": "Easy + strides",
-      "km": 5
+      "date": "2026-10-15",
+      "name": "Easy",
+      "km": 6
     },
     {
-      "date": "2026-09-26",
-      "name": "5K time trial",
-      "km": 8.5,
-      "km_label": "~8.5",
+      "date": "2026-10-17",
+      "name": "Threshold 3 × 1.2 km",
+      "km": 7,
+      "km_label": "~7",
       "key": true
     },
     {
-      "date": "2026-09-27",
+      "date": "2026-10-18",
       "name": "Recovery run",
-      "km": 5
+      "km": 6
     }
   ],
   "sessions": [
     {
-      "id": "2026-09-22-legs-core",
-      "date": "2026-09-22",
-      "day": "Tue",
-      "name": "Legs + core · light",
-      "when": "after the 6 km easy run",
-      "note": "Taper week: familiar movements only, stop 2 short of failure. Last leg work before Saturday.",
+      "id": "2026-10-12-upper-core",
+      "date": "2026-10-12",
+      "day": "Mon",
+      "name": "Upper + core · soft",
+      "note": "Return week after two weeks off. Rested sets, stop 2–3 reps short of failure.",
       "blocks": [
+        {
+          "exercise": "z2_warmup",
+          "sets": 1,
+          "seconds": 1200,
+          "rest": 60,
+          "note": "rower, conversational"
+        },
+        {
+          "type": "block",
+          "label": "A",
+          "rounds": 4,
+          "items": [
+            {
+              "exercise": "pullup",
+              "reps": 4,
+              "rest": 0
+            },
+            {
+              "exercise": "dip",
+              "reps": 5,
+              "rest": 90
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "plank",
+              "seconds": 45,
+              "rest": 60
+            },
+            {
+              "exercise": "side_plank",
+              "side": "R",
+              "seconds": 30,
+              "rest": 45
+            },
+            {
+              "exercise": "side_plank",
+              "side": "L",
+              "seconds": 30,
+              "rest": 45
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "ab_roller",
+              "reps": 6,
+              "rest": 75,
+              "note": "from knees"
+            },
+            {
+              "exercise": "hollow_hold",
+              "seconds": 20,
+              "rest": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2026-10-14-legs-core",
+      "date": "2026-10-14",
+      "day": "Wed",
+      "name": "Light legs + core · soft",
+      "note": "Familiar movements only, no added leg volume: Saturday is the session that matters.",
+      "blocks": [
+        {
+          "exercise": "z2_warmup",
+          "sets": 1,
+          "seconds": 1200,
+          "rest": 60,
+          "note": "bike, conversational"
+        },
         {
           "type": "block",
           "label": "A",
@@ -58,86 +139,13 @@
           "rounds": 3,
           "items": [
             {
-              "exercise": "pogo_hop",
-              "reps": 15,
-              "rest": 60,
-              "note": "low, quick, stiff ankles"
+              "exercise": "band_walk",
+              "reps": 10,
+              "rest": 45
             },
-            {
-              "exercise": "box_jump",
-              "reps": 5,
-              "rest": 90,
-              "note": "step down"
-            }
-          ]
-        },
-        {
-          "type": "block",
-          "label": "C",
-          "rounds": 3,
-          "items": [
             {
               "exercise": "banded_dead_bug",
               "reps": 8,
-              "rest": 60,
-              "note": "round 1 empty hands; rounds 2-3 hold a 10 lb med ball overhead if the low back stays flat"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "2026-09-23-core-upper",
-      "date": "2026-09-23",
-      "day": "Wed",
-      "name": "Core + upper",
-      "note": "No legs, no plyo. Rested sets, not a circuit.",
-      "blocks": [
-        {
-          "exercise": "z2_warmup",
-          "sets": 1,
-          "seconds": 480,
-          "rest": 60,
-          "note": "bike or jump rope"
-        },
-        {
-          "type": "block",
-          "label": "A",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "plank",
-              "seconds": 50,
-              "rest": 60
-            },
-            {
-              "exercise": "side_plank",
-              "side": "R",
-              "seconds": 35,
-              "rest": 45
-            },
-            {
-              "exercise": "side_plank",
-              "side": "L",
-              "seconds": 35,
-              "rest": 45
-            }
-          ]
-        },
-        {
-          "type": "block",
-          "label": "B",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "ab_roller",
-              "reps": 8,
-              "rest": 75,
-              "note": "from knees"
-            },
-            {
-              "exercise": "hollow_hold",
-              "seconds": 20,
               "rest": 60
             }
           ]
@@ -145,15 +153,10 @@
         {
           "type": "block",
           "label": "C",
-          "rounds": 4,
+          "rounds": 2,
           "items": [
             {
-              "exercise": "pullup",
-              "reps": 5,
-              "rest": 0
-            },
-            {
-              "exercise": "dip",
+              "exercise": "pushup",
               "reps": 8,
               "rest": 90
             }
