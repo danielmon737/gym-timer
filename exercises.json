@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21",
+  "updated": "2026-10-26",
   "types": {
     "reps": "counted reps, untimed set",
     "reps_side": "counted reps, left then right",
@@ -42,6 +42,7 @@
     {"id": "copenhagen", "name": "Copenhagen plank", "type": "time_side", "equipment": "bench", "group": "hips"},
     {"id": "calf_raise", "name": "Single-leg calf raise", "type": "reps_side", "equipment": "dumbbell", "group": "calves"},
     {"id": "bent_calf_raise", "name": "Bent-knee calf raise", "type": "reps_side", "equipment": "dumbbell", "group": "calves"},
+    {"id": "calf_hold", "name": "Calf raise hold", "type": "time", "equipment": "bodyweight", "group": "calves"},
     {"id": "plank", "name": "Plank", "type": "time", "equipment": "bodyweight", "group": "core"},
     {"id": "side_plank", "name": "Side plank", "type": "time_side", "equipment": "bodyweight", "group": "core"},
     {"id": "hollow_hold", "name": "Hollow hold", "type": "time", "equipment": "bodyweight", "group": "core"},

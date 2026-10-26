@@ -1,42 +1,35 @@
 {
-  "week": "2026-W42",
-  "updated": "2026-10-11",
+  "week": "2026-W44",
+  "updated": "2026-10-26",
   "runs": [
     {
-      "date": "2026-10-13",
-      "name": "Easy + strides",
-      "km": 6
-    },
-    {
-      "date": "2026-10-15",
+      "date": "2026-10-27",
       "name": "Easy",
       "km": 6
     },
     {
-      "date": "2026-10-17",
-      "name": "Threshold 3 × 1.2 km",
-      "km": 7,
-      "km_label": "~7",
-      "key": true
+      "date": "2026-10-29",
+      "name": "Easy",
+      "km": 6
     },
     {
-      "date": "2026-10-18",
-      "name": "Recovery run",
+      "date": "2026-10-31",
+      "name": "Easy",
       "km": 6
     }
   ],
   "sessions": [
     {
-      "id": "2026-10-12-upper-core",
-      "date": "2026-10-12",
+      "id": "2026-10-26-upper-core",
+      "date": "2026-10-26",
       "day": "Mon",
-      "name": "Upper + core · soft",
-      "note": "Return week after two weeks off. Rested sets, stop 2–3 reps short of failure.",
+      "name": "Upper + core",
+      "note": "Rested sets, stop 2 reps short of failure.",
       "blocks": [
         {
           "exercise": "z2_warmup",
           "sets": 1,
-          "seconds": 1200,
+          "seconds": 900,
           "rest": 60,
           "note": "rower, conversational"
         },
@@ -47,12 +40,12 @@
           "items": [
             {
               "exercise": "pullup",
-              "reps": 4,
-              "rest": 0
+              "reps": 5,
+              "rest": 60
             },
             {
-              "exercise": "dip",
-              "reps": 5,
+              "exercise": "pushup",
+              "reps": 10,
               "rest": 90
             }
           ]
@@ -65,7 +58,7 @@
             {
               "exercise": "plank",
               "seconds": 45,
-              "rest": 60
+              "rest": 45
             },
             {
               "exercise": "side_plank",
@@ -78,6 +71,12 @@
               "side": "L",
               "seconds": 30,
               "rest": 45
+            },
+            {
+              "exercise": "ab_roller",
+              "reps": 8,
+              "rest": 60,
+              "note": "from knees"
             }
           ]
         },
@@ -87,78 +86,15 @@
           "rounds": 3,
           "items": [
             {
-              "exercise": "ab_roller",
-              "reps": 6,
-              "rest": 75,
-              "note": "from knees"
+              "exercise": "calf_hold",
+              "seconds": 40,
+              "rest": 60,
+              "note": "both feet, halfway up, hold still"
             },
             {
               "exercise": "hollow_hold",
               "seconds": 20,
-              "rest": 60
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "2026-10-14-legs-core",
-      "date": "2026-10-14",
-      "day": "Wed",
-      "name": "Light legs + core · soft",
-      "note": "Familiar movements only, no added leg volume: Saturday is the session that matters.",
-      "blocks": [
-        {
-          "exercise": "z2_warmup",
-          "sets": 1,
-          "seconds": 1200,
-          "rest": 60,
-          "note": "bike, conversational"
-        },
-        {
-          "type": "block",
-          "label": "A",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "banded_squat",
-              "reps": 10,
-              "rest": 60,
-              "note": "band above knees"
-            },
-            {
-              "exercise": "glute_bridge",
-              "reps": 12,
-              "rest": 60
-            }
-          ]
-        },
-        {
-          "type": "block",
-          "label": "B",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "band_walk",
-              "reps": 10,
               "rest": 45
-            },
-            {
-              "exercise": "banded_dead_bug",
-              "reps": 8,
-              "rest": 60
-            }
-          ]
-        },
-        {
-          "type": "block",
-          "label": "C",
-          "rounds": 2,
-          "items": [
-            {
-              "exercise": "pushup",
-              "reps": 8,
-              "rest": 90
             }
           ]
         }
