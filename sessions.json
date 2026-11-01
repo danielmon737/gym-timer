@@ -1,46 +1,118 @@
 {
-  "week": "2026-W44",
-  "updated": "2026-10-26",
+  "week": "2026-W45",
+  "updated": "2026-11-01",
   "runs": [
     {
-      "date": "2026-10-27",
-      "name": "Easy",
+      "date": "2026-11-03",
+      "name": "Easy + strides",
       "km": 6
     },
     {
-      "date": "2026-10-29",
-      "name": "Easy",
+      "date": "2026-11-05",
+      "name": "Easy + strides",
       "km": 6
     },
     {
-      "date": "2026-10-31",
-      "name": "Easy",
-      "km": 6
+      "date": "2026-11-07",
+      "name": "Longer easy",
+      "km": 8,
+      "key": true
     }
   ],
   "sessions": [
     {
-      "id": "2026-10-26-upper-core",
-      "date": "2026-10-26",
-      "day": "Mon",
-      "name": "Upper + core",
-      "note": "Rested sets, stop 2 reps short of failure.",
+      "id": "2026-11-01-light-legs-core",
+      "date": "2026-11-01",
+      "day": "Sun",
+      "name": "Light legs + core",
+      "note": "Low volume. Stop 2+ reps short. No jumping.",
       "blocks": [
         {
-          "exercise": "z2_warmup",
+          "exercise": "row_z2",
           "sets": 1,
           "seconds": 900,
           "rest": 60,
-          "note": "rower, conversational"
+          "note": "conversational"
         },
         {
           "type": "block",
           "label": "A",
-          "rounds": 4,
+          "rounds": 2,
+          "items": [
+            {
+              "exercise": "banded_squat",
+              "reps": 10,
+              "rest": 60
+            },
+            {
+              "exercise": "glute_bridge",
+              "reps": 12,
+              "rest": 60
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "band_walk",
+              "reps": 10,
+              "rest": 45
+            },
+            {
+              "exercise": "banded_dead_bug",
+              "reps": 8,
+              "rest": 60
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "calf_raise",
+              "reps": 10,
+              "rest": 60,
+              "note": "both feet, bodyweight, 3 s down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2026-11-02-upper-core",
+      "date": "2026-11-02",
+      "day": "Mon",
+      "name": "Upper + core + pull-up test",
+      "note": "Test first, fresh. Rest of the session stops 2 reps short.",
+      "blocks": [
+        {
+          "exercise": "row_z2",
+          "sets": 1,
+          "seconds": 600,
+          "rest": 60,
+          "note": "easy, plus a few arm swings and dead hangs"
+        },
+        {
+          "label": "TEST",
+          "exercise": "pullup",
+          "sets": 1,
+          "reps": 8,
+          "rest": 180,
+          "note": "MAX strict set: dead hang, chin over bar. Stop at the first unclean rep. Log the real count."
+        },
+        {
+          "type": "block",
+          "label": "A",
+          "rounds": 3,
           "items": [
             {
               "exercise": "pullup",
-              "reps": 5,
+              "reps": 4,
               "rest": 60
             },
             {
