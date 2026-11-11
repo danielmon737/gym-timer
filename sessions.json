@@ -1,31 +1,277 @@
 {
-  "week": "2026-W45",
-  "updated": "2026-11-01",
+  "week": "2026-W46",
+  "updated": "2026-11-10",
   "runs": [
     {
-      "date": "2026-11-03",
-      "name": "Easy + strides",
-      "km": 6
+      "date": "2026-11-10",
+      "name": "Easy (heat, stopped early)",
+      "km": 4
     },
     {
-      "date": "2026-11-05",
-      "name": "Easy + strides",
-      "km": 6
+      "date": "2026-11-12",
+      "name": "Easy 40 min + strides, dawn",
+      "km": 6,
+      "km_label": "~6"
     },
     {
-      "date": "2026-11-07",
-      "name": "Longer easy",
-      "km": 8,
+      "date": "2026-11-14",
+      "name": "Easy 50 min, dawn",
+      "km": 7,
+      "km_label": "~7",
       "key": true
+    },
+    {
+      "date": "2026-11-17",
+      "name": "Treadmill tempo 2 × 5 min",
+      "km": 6,
+      "key": true
+    },
+    {
+      "date": "2026-11-19",
+      "name": "Easy 45 min + strides, dawn",
+      "km": 6,
+      "km_label": "~6"
     }
   ],
   "sessions": [
     {
-      "id": "2026-11-01-light-legs-core",
-      "date": "2026-11-01",
+      "id": "2026-11-11-upper-core",
+      "date": "2026-11-11",
+      "day": "Wed",
+      "name": "Upper + core (gym)",
+      "note": "Air-conditioned gym. Every set stops 2 reps short.",
+      "blocks": [
+        {
+          "exercise": "bike_z2",
+          "sets": 1,
+          "seconds": 600,
+          "rest": 60,
+          "note": "bike or rower, easy"
+        },
+        {
+          "type": "block",
+          "label": "A",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "pullup",
+              "reps": 5,
+              "rest": 60,
+              "note": "no bar: lat pulldown 10"
+            },
+            {
+              "exercise": "bench_press",
+              "reps": 10,
+              "rest": 90,
+              "note": "dumbbells"
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "db_row",
+              "reps": 10,
+              "rest": 45
+            },
+            {
+              "exercise": "db_press",
+              "reps": 8,
+              "rest": 75
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "plank",
+              "seconds": 45,
+              "rest": 45
+            },
+            {
+              "exercise": "side_plank",
+              "side": "R",
+              "seconds": 30,
+              "rest": 30
+            },
+            {
+              "exercise": "side_plank",
+              "side": "L",
+              "seconds": 30,
+              "rest": 45
+            },
+            {
+              "exercise": "dead_bug",
+              "reps": 8,
+              "rest": 45
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2026-11-15-legs-core",
+      "date": "2026-11-15",
       "day": "Sun",
-      "name": "Light legs + core",
-      "note": "Low volume. Stop 2+ reps short. No jumping.",
+      "name": "Legs + core (gym)",
+      "note": "Air-conditioned gym. Moderate loads, 2 reps short. No jumping.",
+      "blocks": [
+        {
+          "exercise": "bike_z2",
+          "sets": 1,
+          "seconds": 600,
+          "rest": 60,
+          "note": "bike or rower, easy"
+        },
+        {
+          "type": "block",
+          "label": "A",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "goblet_squat",
+              "reps": 10,
+              "rest": 60
+            },
+            {
+              "exercise": "rdl",
+              "reps": 10,
+              "rest": 90,
+              "note": "dumbbells"
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "bss",
+              "reps": 8,
+              "rest": 60,
+              "note": "light, or plain split squat"
+            },
+            {
+              "exercise": "hip_thrust",
+              "reps": 12,
+              "rest": 75
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "calf_raise",
+              "reps": 12,
+              "rest": 45,
+              "note": "both feet, 3 s down"
+            },
+            {
+              "exercise": "hollow_hold",
+              "seconds": 20,
+              "rest": 45
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2026-11-16-upper-core",
+      "date": "2026-11-16",
+      "day": "Mon",
+      "name": "Upper + core (gym)",
+      "note": "Air-conditioned gym. Every set stops 2 reps short.",
+      "blocks": [
+        {
+          "exercise": "bike_z2",
+          "sets": 1,
+          "seconds": 600,
+          "rest": 60,
+          "note": "bike or rower, easy"
+        },
+        {
+          "type": "block",
+          "label": "A",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "pullup",
+              "reps": 5,
+              "rest": 60,
+              "note": "no bar: lat pulldown 10"
+            },
+            {
+              "exercise": "bench_press",
+              "reps": 10,
+              "rest": 90,
+              "note": "dumbbells"
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "db_row",
+              "reps": 10,
+              "rest": 45
+            },
+            {
+              "exercise": "db_press",
+              "reps": 8,
+              "rest": 75
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "C",
+          "rounds": 3,
+          "items": [
+            {
+              "exercise": "plank",
+              "seconds": 45,
+              "rest": 45
+            },
+            {
+              "exercise": "side_plank",
+              "side": "R",
+              "seconds": 30,
+              "rest": 30
+            },
+            {
+              "exercise": "side_plank",
+              "side": "L",
+              "seconds": 30,
+              "rest": 45
+            },
+            {
+              "exercise": "dead_bug",
+              "reps": 8,
+              "rest": 45
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2026-11-20-full-body",
+      "date": "2026-11-20",
+      "day": "Fri",
+      "name": "Light full body (gym)",
+      "note": "Last vacation session. Easy, 2+ reps short.",
       "blocks": [
         {
           "exercise": "row_z2",
@@ -40,12 +286,31 @@
           "rounds": 2,
           "items": [
             {
-              "exercise": "banded_squat",
+              "exercise": "goblet_squat",
               "reps": 10,
               "rest": 60
             },
             {
-              "exercise": "glute_bridge",
+              "exercise": "pullup",
+              "reps": 5,
+              "rest": 60,
+              "note": "no bar: lat pulldown 10"
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "label": "B",
+          "rounds": 2,
+          "items": [
+            {
+              "exercise": "bench_press",
+              "reps": 10,
+              "rest": 60,
+              "note": "dumbbells"
+            },
+            {
+              "exercise": "hip_thrust",
               "reps": 12,
               "rest": 60
             }
@@ -53,79 +318,8 @@
         },
         {
           "type": "block",
-          "label": "B",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "band_walk",
-              "reps": 10,
-              "rest": 45
-            },
-            {
-              "exercise": "banded_dead_bug",
-              "reps": 8,
-              "rest": 60
-            }
-          ]
-        },
-        {
-          "type": "block",
           "label": "C",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "calf_raise",
-              "reps": 10,
-              "rest": 60,
-              "note": "both feet, bodyweight, 3 s down"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "2026-11-02-upper-core",
-      "date": "2026-11-02",
-      "day": "Mon",
-      "name": "Upper + core + pull-up test",
-      "note": "Test first, fresh. Rest of the session stops 2 reps short.",
-      "blocks": [
-        {
-          "exercise": "row_z2",
-          "sets": 1,
-          "seconds": 600,
-          "rest": 60,
-          "note": "easy, plus a few arm swings and dead hangs"
-        },
-        {
-          "label": "TEST",
-          "exercise": "pullup",
-          "sets": 1,
-          "reps": 8,
-          "rest": 180,
-          "note": "MAX strict set: dead hang, chin over bar. Stop at the first unclean rep. Log the real count."
-        },
-        {
-          "type": "block",
-          "label": "A",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "pullup",
-              "reps": 4,
-              "rest": 60
-            },
-            {
-              "exercise": "pushup",
-              "reps": 10,
-              "rest": 90
-            }
-          ]
-        },
-        {
-          "type": "block",
-          "label": "B",
-          "rounds": 3,
+          "rounds": 2,
           "items": [
             {
               "exercise": "plank",
@@ -136,7 +330,7 @@
               "exercise": "side_plank",
               "side": "R",
               "seconds": 30,
-              "rest": 45
+              "rest": 30
             },
             {
               "exercise": "side_plank",
@@ -145,27 +339,8 @@
               "rest": 45
             },
             {
-              "exercise": "ab_roller",
+              "exercise": "dead_bug",
               "reps": 8,
-              "rest": 60,
-              "note": "from knees"
-            }
-          ]
-        },
-        {
-          "type": "block",
-          "label": "C",
-          "rounds": 3,
-          "items": [
-            {
-              "exercise": "calf_hold",
-              "seconds": 40,
-              "rest": 60,
-              "note": "both feet, halfway up, hold still"
-            },
-            {
-              "exercise": "hollow_hold",
-              "seconds": 20,
               "rest": 45
             }
           ]
