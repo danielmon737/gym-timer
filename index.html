@@ -408,6 +408,9 @@
     .sum-act small { display: block; color: var(--neutral); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
     .sum-act input { width: 76px; background: var(--bg); border: 1px solid var(--border); color: var(--go); font-family: 'Bebas Neue', sans-serif; font-size: 22px; text-align: center; border-radius: 6px; padding: 4px; }
     textarea.notes { width: 100%; min-height: 64px; margin-top: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Barlow Condensed', sans-serif; font-size: 15px; padding: 10px 12px; resize: vertical; user-select: text; -webkit-user-select: text; flex-shrink: 0; }
+    .man-row { padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .man-inputs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .man-inputs input { width: 64px; background: var(--bg); border: 1px solid var(--border); color: var(--go); font-family: 'Bebas Neue', sans-serif; font-size: 24px; text-align: center; border-radius: 6px; padding: 6px 4px; user-select: text; -webkit-user-select: text; }
     .sum-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 12px; flex-shrink: 0; }
     .toast { position: fixed; left: 50%; bottom: max(env(safe-area-inset-bottom), 24px); transform: translateX(-50%) translateY(20px); background: var(--go); color: var(--bg); font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; padding: 10px 18px; border-radius: 8px; opacity: 0; transition: opacity 0.2s, transform 0.2s; z-index: 300; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -460,7 +463,7 @@
   <div class="autolock-tip">
     📱 <strong>Tip:</strong> Set Auto-Lock to <strong>Never</strong> during workouts.<br>
     Settings → Display & Brightness → Auto-Lock<br>
-    <span style="opacity:.6">v11</span>
+    <span style="opacity:.6">v12</span>
   </div>
   </div>
   <nav class="tabbar">
@@ -541,8 +544,26 @@
   <div class="detail-actions">
     <button class="start-btn" id="start-block-btn" onclick="startBlock()">START BLOCK</button>
     <div style="text-align:center; margin-top:6px;">
+      <button class="text-btn" id="manual-block-btn" onclick="openManualBlock()">Did it without the timer · log reps</button>
       <button class="text-btn" id="reset-block-btn" onclick="resetBlock()" hidden>Reset this block · nothing logged</button>
     </div>
+  </div>
+</div>
+
+<!-- ── LOG A BLOCK WITHOUT THE TIMER ── -->
+<div class="screen" id="screen-manual" style="overflow-y:auto;">
+  <div class="config-top-bar">
+    <button class="back-btn" onclick="openBlock(S.blockIdx)">
+      <span class="back-arrow">‹</span> BACK
+    </button>
+    <div class="config-title-box">
+      <div class="config-title" id="man-title">LOG BLOCK</div>
+    </div>
+  </div>
+  <div class="sess-note muted">Done without the timer. Change any number that differs from what you did; clear a box for a set you skipped.</div>
+  <div class="block-list" id="man-detail"></div>
+  <div class="detail-actions">
+    <button class="start-btn" onclick="saveManualBlock()">SAVE BLOCK</button>
   </div>
 </div>
 
@@ -1135,7 +1156,7 @@ document.addEventListener('visibilitychange', () => {
 // per block on the phone (localStorage) and composed into a session log for the review.
 // The runner reuses the free timer's audio, flash, wake lock and screen helpers but keeps
 // its own state so the free timer is untouched.
-const LS = { state: 'gt_state_v2', data: 'gt_data_v1' };
+const LS = { state: 'gt_state_v2', data: 'gt_data_v1', run: 'gt_run_v1' };
 const S = {
   plan: null, exMap: {}, session: null, sessionIdx: -1, blockIdx: -1,
   phases: [], results: [], idx: 0, status: 'idle',
@@ -1154,7 +1175,16 @@ function fmtClock(iso) { const d = new Date(iso); return isNaN(d) ? '' : String(
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1400); }
 
 // ── plan loading ──
+function applyPlan(plan, exs) {
+  S.plan = plan; S.exMap = {};
+  ((exs && exs.exercises) || []).forEach(x => { S.exMap[x.id] = x; });
+  renderHome();
+}
+// The copy already on the phone is shown at once; the network copy replaces it when it arrives,
+// so a weak signal never leaves the home screen blank.
 async function loadPlan() {
+  const cached = lsGet(LS.data, null);
+  if (cached && cached.plan) { applyPlan(cached.plan, cached.exs); restoreRun(); }
   let plan = null, exs = null;
   try {
     const [p, e] = await Promise.all([
@@ -1163,12 +1193,10 @@ async function loadPlan() {
     ]);
     plan = p; exs = e;
   } catch(e) {}
-  const cached = lsGet(LS.data, null);
   if (plan && exs) lsSet(LS.data, { plan, exs });
   else if (cached) { plan = plan || cached.plan; exs = exs || cached.exs; }
-  S.plan = plan; S.exMap = {};
-  ((exs && exs.exercises) || []).forEach(x => { S.exMap[x.id] = x; });
-  renderHome();
+  applyPlan(plan, exs);
+  restoreRun();
 }
 
 // ── prescription helpers ──
@@ -1250,7 +1278,9 @@ function renderHome() {
   const ss = S.plan.sessions;
   const doneN = ss.filter(isDone).length;
   sub.textContent = `${doneN} of ${ss.length} done`;
-  wk.textContent = [S.plan.week, S.plan.updated ? 'updated ' + fmtDate(S.plan.updated) : ''].filter(Boolean).join(' · ');
+  const mon = isoWeekMonday(S.plan.week);
+  const past = mon && new Date(mon.getTime() + 6 * 86400000).toISOString().slice(0, 10) < today;
+  wk.textContent = [S.plan.week, S.plan.updated ? 'updated ' + fmtDate(S.plan.updated) : '', past ? 'past week' : ''].filter(Boolean).join(' · ');
   list.innerHTML = ss.map((s, i) => {
     const done = isDone(s), isToday = s.date === today;
     const st = sessState(s.id);
@@ -1364,13 +1394,14 @@ function openBlock(bi) {
   document.getElementById('blk-title').textContent = blockTitle(b).toUpperCase();
   const st = sessState(s.id), res = blockResult(s, bi);
   const parts = [];
-  if (res) parts.push(`<div class="sess-note muted">Done ✓ at ${fmtClock(res.completedAt)} — start again to redo it, or reset it below.</div>`);
+  if (res) parts.push(`<div class="sess-note muted">${res.manual ? 'Logged without the timer' : 'Done ✓'} at ${fmtClock(res.completedAt)} — start again to redo it, or reset it below.</div>`);
   else if (st && st.manual) parts.push(`<div class="sess-note muted">Logged as done without the timer.</div>`);
   if (b.note) parts.push(`<div class="sess-note">${esc(b.note)}</div>`);
   parts.push(`<div class="block-list">${blockRowsHTML(b)}</div>`);
   parts.push(`<div class="sess-est">~${estimateBlockMin(b)} min with rest</div>`);
   document.getElementById('blk-detail').innerHTML = parts.join('');
   document.getElementById('reset-block-btn').hidden = !res;
+  document.getElementById('manual-block-btn').textContent = res ? 'Edit the logged reps' : 'Did it without the timer · log reps';
   document.getElementById('start-block-btn').textContent = res ? 'START AGAIN' : 'START BLOCK';
   const ta = document.getElementById('blk-notes');
   ta.hidden = !res; ta.value = res && res.note ? res.note : '';
@@ -1453,6 +1484,41 @@ function enterPhase(i, overshoot, cue) {
     if (p.kind === 'rest') { doFlash('#FF3535'); multiBeep(330, 3, 110); }
     else { doFlash('#C8FF00'); multiBeep(1047, 2, 130); }
   }
+  saveRun();
+}
+
+// ── a block in progress survives a reload ──
+// iOS may reload the page when the app is left mid-block (a call, another app). The run is
+// written to localStorage at every phase change and picked up again on the next load.
+function saveRun() {
+  if (!S.session || (S.status !== 'running' && S.status !== 'paused')) return;
+  lsSet(LS.run, { sessionId: S.session.id, blockIdx: S.blockIdx, phases: S.phases, results: S.results, idx: S.idx,
+    status: S.status, pausedElapsed: S.pausedElapsed, wallStart: S.wallStart, startedAt: S.startedAt, repsVal: S.repsVal });
+}
+function clearRun() { try { localStorage.removeItem(LS.run); } catch(e) {} }
+function restoreRun() {
+  if (S.status !== 'idle') return;
+  const r = lsGet(LS.run, null); if (!r) return;
+  const si = S.plan && Array.isArray(S.plan.sessions) ? S.plan.sessions.findIndex(x => x.id === r.sessionId) : -1;
+  const ok = si >= 0 && S.plan.sessions[si].blocks && S.plan.sessions[si].blocks[r.blockIdx]
+    && Array.isArray(r.phases) && r.phases[r.idx] && Date.now() - r.startedAt < 3 * 3600 * 1000;
+  if (!ok) { clearRun(); return; }
+  S.session = S.plan.sessions[si]; S.sessionIdx = si; S.blockIdx = r.blockIdx;
+  S.phases = r.phases; S.results = r.results; S.idx = r.idx; S.startedAt = r.startedAt; S.repsVal = r.repsVal || 0;
+  S.status = r.status; S.pausedElapsed = r.pausedElapsed || 0; S.wallStart = r.wallStart; S.lastRemSec = -1;
+  // A rest that ran out while the app was closed is over. Holds are never assumed done: a hold
+  // that was interrupted starts again from zero, paused.
+  let p = S.phases[S.idx];
+  if (p.kind === 'rest' && sElapsed() >= p.dur && S.idx + 1 < S.phases.length) {
+    S.results[S.idx] = { skipped: false, dur: Math.round(p.dur / 1000) };
+    S.status = 'running'; enterPhase(S.idx + 1, 0, false); p = S.phases[S.idx];
+  }
+  if (p.kind === 'work' && p.timed) { S.status = 'paused'; S.pausedElapsed = 0; }
+  else if (p.kind === 'work') S.repsVal = r.idx === S.idx ? (r.repsVal || 0) : p.target;
+  saveRun();
+  document.addEventListener('pointerdown', initAudio, { once: true });
+  if (S.status === 'running') { acquireWakeLock(); runTick(); }
+  showScreen('run'); renderRunStatic(); toast('BLOCK RESUMED');
 }
 
 function runTick() {
@@ -1487,18 +1553,18 @@ function completePhase(overshoot, cue) {
 function doneSet()   { if (S.status === 'running') completePhase(0, true); }
 function skipRest()  { if (S.status === 'running') completePhase(0, true); }
 function skipHold()  { if (S.status === 'running' || S.status === 'paused') { if (S.status === 'paused') { S.status = 'running'; S.wallStart = Date.now(); runTick(); } completePhase(0, true); } }
-function extendRest(sec) { const p = S.phases[S.idx]; if (p && p.kind === 'rest') { p.dur += sec * 1000; renderRunDynamic(); } }
-function stepReps(d) { S.repsVal = Math.max(0, S.repsVal + d); renderRunDynamic(); }
+function extendRest(sec) { const p = S.phases[S.idx]; if (p && p.kind === 'rest') { p.dur += sec * 1000; saveRun(); renderRunDynamic(); } }
+function stepReps(d) { S.repsVal = Math.max(0, S.repsVal + d); saveRun(); renderRunDynamic(); }
 
 function toggleRunPause() {
   if (S.status === 'running') { S.pausedElapsed = sElapsed(); S.status = 'paused'; clearInterval(S.intervalId); S.intervalId = null; }
   else if (S.status === 'paused') { S.status = 'running'; S.wallStart = Date.now(); runTick(); acquireWakeLock(); }
-  renderRunStatic();
+  saveRun(); renderRunStatic();
 }
 
 // END during a block: nothing from the attempt is logged. Confirms only if a set was already recorded.
 function endBlockEarly() {
-  if (S.status === 'done') return;
+  if (S.status === 'idle') return;
   const anyWork = S.results.some(r => r.actual != null);
   if (anyWork && !confirm('End this block? Nothing from it gets logged.')) return;
   finishBlock(true);
@@ -1591,19 +1657,70 @@ function summarizeBlock(b, bi) {
 
 function finishBlock(aborted) {
   clearInterval(S.intervalId); S.intervalId = null;
-  S.status = 'done'; releaseWakeLock();
+  S.status = 'idle'; releaseWakeLock(); clearRun();
   const s = S.session, bi = S.blockIdx, b = s.blocks[bi];
   if (aborted) { toast('NOTHING LOGGED'); openSession(S.sessionIdx); return; }
   const res = summarizeBlock(b, bi);
-  res.completedAt = new Date().toISOString();
   res.durationSec = Math.round((Date.now() - S.startedAt) / 1000);
+  doFlash('#C8FF00'); alarmBeep();
+  storeBlockResult(s, bi, res);
+}
+
+// Stores one block's result (from the timer or typed in) and moves on.
+function storeBlockResult(s, bi, res) {
+  res.completedAt = new Date().toISOString();
   const st = sessState(s.id) || { blocks: {}, notes: '' };
+  const prev = st.blocks && st.blocks[bi];
+  if (prev && prev.note && !res.note) res.note = prev.note;
   st.blocks = st.blocks || {}; st.blocks[bi] = res;
   if (sessionDone(s) || (s.blocks || []).every((x, k) => x.optional || st.blocks[k])) st.doneAt = st.doneAt || res.completedAt;
   setSessState(s.id, st);
-  doFlash('#C8FF00'); alarmBeep();
   if (sessionDone(s)) { toast('SESSION DONE'); openSummary(); }
-  else { toast('BLOCK DONE'); openBlock(bi); }
+  else { toast(res.manual ? 'BLOCK LOGGED' : 'BLOCK DONE'); openBlock(bi); }
+}
+
+// ── logging a block that was done without the timer ──
+// One number box per set, filled with the prescription (or with what was logged before).
+function manualShape(b) {
+  const items = isGroup(b) ? (b.items || []) : [b];
+  const n = b.type === 'amrap' ? 1 : isGroup(b) ? (b.rounds || 1) : (b.sets || 1);
+  return { items, n };
+}
+function openManualBlock() {
+  const s = S.session, bi = S.blockIdx, b = s && s.blocks[bi]; if (!b) return;
+  const { items, n } = manualShape(b), prev = blockResult(s, bi);
+  document.getElementById('man-title').textContent = blockTitle(b).toUpperCase();
+  document.getElementById('man-detail').innerHTML = items.map((it, ii) => {
+    const amrap = b.type === 'amrap', timed = !amrap && isTimed(it);
+    const target = amrap ? '' : timed ? it.seconds : (it.reps || 0);
+    const unit = amrap ? 'total reps' : (timed ? 'seconds' : 'reps') + (isSided(it) ? ' per side' : '') + ` · target ${target}`;
+    const old = prev && prev.entries && prev.entries[ii] ? prev.entries[ii].actual || [] : null;
+    const boxes = Array.from({ length: n }, (_, k) => {
+      let v = target;
+      if (amrap) v = prev && prev.amrapReps != null ? prev.amrapReps : '';
+      else if (old) { const m = /\d+(?::\d+)?/.exec(old[k] || ''); v = m ? (m[0].includes(':') ? (+m[0].split(':')[0]) * 60 + (+m[0].split(':')[1]) : +m[0]) : ''; }
+      return `<input type="number" inputmode="numeric" min="0" data-item="${ii}" value="${v}" aria-label="set ${k + 1}">`;
+    }).join('');
+    return `<div class="man-row"><div class="block-name">${itemLabel(b, ii) ? `<small class="lbl">${esc(itemLabel(b, ii))}</small>` : ''}${esc(itemName(it))}<small>${esc(unit)}</small></div><div class="man-inputs">${boxes}</div></div>`;
+  }).join('');
+  showScreen('manual');
+}
+function saveManualBlock() {
+  const s = S.session, bi = S.blockIdx, b = s && s.blocks[bi]; if (!b) return;
+  const { items, n } = manualShape(b), amrap = b.type === 'amrap';
+  let amrapReps = null, any = false;
+  const entries = items.map((it, ii) => {
+    // A cleared box is a skipped set: kept as "-" so later sets stay in their place, dropped at the end.
+    const vals = [...document.querySelectorAll(`#man-detail input[data-item="${ii}"]`)].map(x => { const v = parseInt(x.value, 10); return isNaN(v) || v < 0 ? null : v; });
+    while (vals.length && vals[vals.length - 1] == null) vals.pop();
+    const both = isSided(it), timed = isTimed(it);
+    const fa = v => v == null ? '-' : (timed && v >= 90) ? fmtMMSS(v) : String(v);
+    if (vals.length) any = true;
+    if (amrap) { amrapReps = vals.length ? vals[0] : null; return { exercise: entryName(b, it, ii), rx: entryRx(b, it, ii), load: it.load || '', sided: false, actual: [], of: 1 }; }
+    return { exercise: entryName(b, it, ii), rx: entryRx(b, it, ii), load: it.load || '', sided: both, actual: vals.map(v => both && v != null ? `L${fa(v)} R${fa(v)}` : fa(v)), of: n };
+  });
+  if (!any) { toast('NOTHING ENTERED'); return; }
+  storeBlockResult(s, bi, { entries, restSkipped: 0, amrapReps, manual: true, durationSec: 0 });
 }
 
 function resetBlock() {
@@ -1647,7 +1764,7 @@ function openSummary() {
       let act;
       if (b.type === 'amrap' && res) act = `<input type="number" inputmode="numeric" placeholder="reps" value="${res.amrapReps != null ? res.amrapReps : ''}" onchange="setAmrapReps(${bi}, this.value)">`;
       else act = esc(entryActual(st, b, res, e));
-      const small = [e.rx, e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : ''].filter(Boolean).join(' · ');
+      const small = [e.rx, e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : '', res && res.manual && ei === 0 ? 'no timer' : ''].filter(Boolean).join(' · ');
       lines.push(`<div class="sum-line"><div class="sum-ex">${esc(e.exercise)}</div><div class="sum-act">${act}<small>${esc(small)}</small></div></div>`);
     });
     if (res && res.note) lines.push(`<div class="sum-line"><div class="sum-ex blk-note">${esc(res.note)}</div></div>`);
@@ -1679,7 +1796,7 @@ function sessionText(s) {
     const res = st.blocks && st.blocks[bi];
     const entries = res ? res.entries : prescribedEntries(b, bi);
     entries.forEach((e, ei) => {
-      const extras = [e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : ''].filter(Boolean);
+      const extras = [e.load, res && res.restSkipped && ei === 0 ? `${res.restSkipped} rest skipped` : '', res && res.manual && ei === 0 ? 'no timer' : ''].filter(Boolean);
       L.push(`- ${e.exercise}: ${e.rx}${extras.length ? ' (' + extras.join(', ') + ')' : ''} → ${entryActual(st, b, res, e)}`);
     });
     if (res && res.note) L.push(`  ${blockTitle(b)} note: ${res.note}`);
@@ -1720,7 +1837,7 @@ function storedText(id, st) {
     const res = st.blocks[bi];
     (res.entries || []).forEach(e => {
       const act = res.amrapReps != null ? res.amrapReps + ' reps' : (e.actual && e.actual.length ? e.actual.join(e.sided ? ' · ' : '/') : 'not done');
-      L.push(`- ${e.exercise}: ${e.rx}${e.load ? ' (' + e.load + ')' : ''} → ${act}`);
+      L.push(`- ${e.exercise}: ${e.rx}${e.load || res.manual ? ' (' + [e.load, res.manual ? 'no timer' : ''].filter(Boolean).join(', ') + ')' : ''} → ${act}`);
     });
     if (res.note) L.push(`  block ${+bi + 1} note: ${res.note}`);
   });

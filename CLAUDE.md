@@ -32,4 +32,7 @@ Parent folder `../` is the Fitness workspace; the coaching project is `../coach/
   two-sided item, END before any set is recorded (nothing logged), reset of a finished block,
   finishing the last block (session done + summary), the Copy log text, all three tabs render and
   Back from a free-timer screen returns to the Timer tab, and Save log to Files
-  (a session from an older week still in localStorage must export via its stored entries).
+  (a session from an older week still in localStorage must export via its stored entries),
+  logging a block without the timer (block screen → "Did it without the timer · log reps": change
+  one number, clear one box, save, reopen to edit), and reloading the page mid-block (a rest or a
+  rep set carries on; an interrupted hold comes back paused at zero; END clears the saved run).
